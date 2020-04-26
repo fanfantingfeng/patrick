@@ -64,7 +64,7 @@ def output(data,text):
 	data.dropna(axis=0,how='all',inplace=True)
 	data.dropna(axis=1,how='all',inplace=True)
 	data = data.drop_duplicates()
-	space(data)
+	fill_space(data)
 	df = DataFrame(data[data.loc[:,'SAP编号'].notnull()])
 	try:
 		df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
