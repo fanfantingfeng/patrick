@@ -6,90 +6,95 @@ import numpy as np
 import os
 import xlrd
 
-print("»¶Ó­Ê¹ÓÃºÏ²¢±í¸ñÄ£°å\nÒ»ÇĞ½âÊÍÈ¨¾ù¹é¿ª·¢ÕßËùÓĞ!\n¿ª·¢Õß: ·²·²\n")
+print("æ¬¢è¿ä½¿ç”¨åˆå¹¶è¡¨æ ¼æ¨¡æ¿\nä¸€åˆ‡è§£é‡Šæƒå‡å½’å¼€å‘è€…æ‰€æœ‰!\nå¼€å‘è€…: å‡¡å‡¡\n")
 
-#²ÎÊıÖ¸¶¨
+#å‚æ•°æŒ‡å®š
 desk = os.path.join(os.path.expanduser("~"),"Desktop")
-path = desk + "\\¹¤×ÊÃ÷Ï¸"
-path_mid = 'D:\\¸ùÄ¿Â¼\\ÏîÄ¿\\ÖĞ¼ä±í¸ñ'
+path = desk + "\\å·¥èµ„æ˜ç»†"
+path_mid = 'D:\\æ ¹ç›®å½•\\é¡¹ç›®\\ä¸­é—´è¡¨æ ¼'
 print(path)
-sheet_dir = {"¿¼ÇÚ":"kq","½òÌù":"jt","Éç±£":"ss",
-			 "¸½¼Ó-Ë°Îñ":"sw","¸½¼Ó-SAP":"sap",
-			 "Ğ½×ÊÒì¶¯±í":"xz","½òÌùÒì¶¯±í":"jt1",
-			 "Ğ¡Ê±¹¤":"sl","ÒøĞĞÃ÷Ï¸":"bk"}
+sheet_dir = {"è€ƒå‹¤":"kq","æ´¥è´´":"jt","ç¤¾ä¿":"ss",
+			 "é™„åŠ -ç¨åŠ¡":"sw","é™„åŠ -SAP":"sap",
+			 "è–ªèµ„å¼‚åŠ¨è¡¨":"xz","æ´¥è´´å¼‚åŠ¨è¡¨":"jt1",
+			 "å°æ—¶å·¥":"sl","é“¶è¡Œæ˜ç»†":"bk"}
 
-col_kq = ["SAP±àºÅ","ĞÕÃû","µ±ÔÂ¼ÆĞ½ÌìÊı","Ó¦³öÇÚÌìÊı","Êµ¼Ê³öÇÚÌìÊı",
-			"È«ÇÚ½±","·¹Ìù","´óµê½òÌù","²¡¼ÙÌìÊı","ÎŞĞ½ÊÂ¼ÙÌìÊı","²ú¼ÙÌìÊı",
-			"»é¼ÙÌìÊı","É¥¼ÙÌìÊı","¿ÕÇÚÌìÊı","¿õ¹¤ÌìÊı","³ö²îÌìÊı","Åã²ú¼ÙÌìÊı",
-			"¹¤ÉË¼ÙÌìÊı","µ÷ĞİĞ¡Ê±","ÄêĞİÌìÊı","ÓĞĞ½ÊÂ¼ÙÌìÊı","µêÆÌÎ´´ò¿¨£¨´Î£©",
-			"·ÇµêÆÌÎ´´ò¿¨£¨´Î£©","·ÇµêÆÌ³Ùµ½0-30M","·ÇµêÆÌ³Ùµ½31-60M",
-			"·ÇµêÆÌ³Ùµ½61-120M","·ÇµêÆÌ³Ùµ½120MÒÔÉÏ","ĞĞÕşÔçÍË30MÒÔÄÚ",
-			"ĞĞÕşÔçÍË30MÒÔÉÏ","µêÆÌ³Ùµ½0-10M","µêÆÌ³Ùµ½11-30M",
-			"µêÆÌ³Ùµ½31-60M","µêÆÌ³Ùµ½61-120M","µêÆÌ³Ùµ½120MÒÔÉÏ",
-			"µêÆÌÔçÍË1Ğ¡Ê±ÄÚ","µêÆÌÔçÍË1Ğ¡Ê±ÒÔÉÏ",
-			"Æ½Ê±¼Ó°àÊ±","½ÚÈÕ¼Ó°àÊ±","ÖÜÄ©¼Ó°àÊ±"]
-col_jt = ["SAP±àºÅ","ĞÕÃû","¹¤×ÊÏî","½ğ¶î"]
+col_kq = ["SAPç¼–å·","å§“å","å½“æœˆè®¡è–ªå¤©æ•°","åº”å‡ºå‹¤å¤©æ•°","å®é™…å‡ºå‹¤å¤©æ•°",
+			"å…¨å‹¤å¥–","é¥­è´´","å¤§åº—æ´¥è´´","ç—…å‡å¤©æ•°","æ— è–ªäº‹å‡å¤©æ•°","äº§å‡å¤©æ•°",
+			"å©šå‡å¤©æ•°","ä¸§å‡å¤©æ•°","ç©ºå‹¤å¤©æ•°","æ—·å·¥å¤©æ•°","å‡ºå·®å¤©æ•°","é™ªäº§å‡å¤©æ•°",
+			"å·¥ä¼¤å‡å¤©æ•°","è°ƒä¼‘å°æ—¶","å¹´ä¼‘å¤©æ•°","æœ‰è–ªäº‹å‡å¤©æ•°","åº—é“ºæœªæ‰“å¡ï¼ˆæ¬¡ï¼‰",
+			"éåº—é“ºæœªæ‰“å¡ï¼ˆæ¬¡ï¼‰","éåº—é“ºè¿Ÿåˆ°0-30M","éåº—é“ºè¿Ÿåˆ°31-60M",
+			"éåº—é“ºè¿Ÿåˆ°61-120M","éåº—é“ºè¿Ÿåˆ°120Mä»¥ä¸Š","è¡Œæ”¿æ—©é€€30Mä»¥å†…",
+			"è¡Œæ”¿æ—©é€€30Mä»¥ä¸Š","åº—é“ºè¿Ÿåˆ°0-10M","åº—é“ºè¿Ÿåˆ°11-30M",
+			"åº—é“ºè¿Ÿåˆ°31-60M","åº—é“ºè¿Ÿåˆ°61-120M","åº—é“ºè¿Ÿåˆ°120Mä»¥ä¸Š",
+			"åº—é“ºæ—©é€€1å°æ—¶å†…","åº—é“ºæ—©é€€1å°æ—¶ä»¥ä¸Š",
+			"å¹³æ—¶åŠ ç­æ—¶","èŠ‚æ—¥åŠ ç­æ—¶","å‘¨æœ«åŠ ç­æ—¶"]
+col_jt = ["SAPç¼–å·","å§“å","å·¥èµ„é¡¹","é‡‘é¢"]
 
-col_ss = ["SAP±àºÅ","ĞÕÃû","Éç±£ÕË»§","¹«»ı½ğÕË»§",
-		"ÑøÀÏ½ÉÄÉ½ğ¶î¸öÈË","ÑøÀÏ½ÉÄÉ½ğ¶î¹«Ë¾","Ò½ÁÆ½ÉÄÉ½ğ¶î¸öÈË","Ò½ÁÆ½ÉÄÉ½ğ¶î¹«Ë¾",
-		"Ê§Òµ½ÉÄÉ½ğ¶î¸öÈË","Ê§Òµ½ÉÄÉ½ğ¶î¹«Ë¾","¹¤ÉË½ÉÄÉ½ğ¶î¹«Ë¾","ÉúÓı½ÉÄÉ½ğ¶î¹«Ë¾",
-		"¹«»ı½ğ½ÉÄÉ½ğ¶î¸öÈË","¹«»ı½ğ½ÉÄÉ½ğ¶î¹«Ë¾","ÑøÀÏ²¹½É½ğ¶î¸öÈË","ÑøÀÏ²¹½É½ğ¶î¹«Ë¾",
-		"Ò½ÁÆ²¹½É½ğ¶î¸öÈË","Ò½ÁÆ²¹½É½ğ¶î¹«Ë¾","Ê§Òµ²¹½É½ğ¶î¸öÈË","Ê§Òµ²¹½É½ğ¶î¹«Ë¾",
-		"¹¤ÉË²¹½É½ğ¶î¹«Ë¾","ÉúÓı²¹½É½ğ¶î¹«Ë¾","¹«»ı½ğ²¹½É½ğ¶î¸öÈË","¹«»ı½ğ²¹½É½ğ¶î¹«Ë¾",
-		"¸½¼ÓÒ½ÁÆ½ÉÄÉ½ğ¶î¸öÈË","¸½¼ÓÒ½ÁÆ½ÉÄÉ½ğ¶î¹«Ë¾",
-		"¸½¼ÓÒ½ÁÆ²¹½É½ğ¶î¸öÈË","¸½¼ÓÒ½ÁÆ²¹½É½ğ¶î¹«Ë¾"]
+col_ss = ["SAPç¼–å·","å§“å","ç¤¾ä¿è´¦æˆ·","å…¬ç§¯é‡‘è´¦æˆ·",
+		"å…»è€ç¼´çº³é‡‘é¢ä¸ªäºº","å…»è€ç¼´çº³é‡‘é¢å…¬å¸","åŒ»ç–—ç¼´çº³é‡‘é¢ä¸ªäºº","åŒ»ç–—ç¼´çº³é‡‘é¢å…¬å¸",
+		"å¤±ä¸šç¼´çº³é‡‘é¢ä¸ªäºº","å¤±ä¸šç¼´çº³é‡‘é¢å…¬å¸","å·¥ä¼¤ç¼´çº³é‡‘é¢å…¬å¸","ç”Ÿè‚²ç¼´çº³é‡‘é¢å…¬å¸",
+		"å…¬ç§¯é‡‘ç¼´çº³é‡‘é¢ä¸ªäºº","å…¬ç§¯é‡‘ç¼´çº³é‡‘é¢å…¬å¸","å…»è€è¡¥ç¼´é‡‘é¢ä¸ªäºº","å…»è€è¡¥ç¼´é‡‘é¢å…¬å¸",
+		"åŒ»ç–—è¡¥ç¼´é‡‘é¢ä¸ªäºº","åŒ»ç–—è¡¥ç¼´é‡‘é¢å…¬å¸","å¤±ä¸šè¡¥ç¼´é‡‘é¢ä¸ªäºº","å¤±ä¸šè¡¥ç¼´é‡‘é¢å…¬å¸",
+		"å·¥ä¼¤è¡¥ç¼´é‡‘é¢å…¬å¸","ç”Ÿè‚²è¡¥ç¼´é‡‘é¢å…¬å¸","å…¬ç§¯é‡‘è¡¥ç¼´é‡‘é¢ä¸ªäºº","å…¬ç§¯é‡‘è¡¥ç¼´é‡‘é¢å…¬å¸",
+		"é™„åŠ åŒ»ç–—ç¼´çº³é‡‘é¢ä¸ªäºº","é™„åŠ åŒ»ç–—ç¼´çº³é‡‘é¢å…¬å¸",
+		"é™„åŠ åŒ»ç–—è¡¥ç¼´é‡‘é¢ä¸ªäºº","é™„åŠ åŒ»ç–—è¡¥ç¼´é‡‘é¢å…¬å¸"]
 
 
-#Êı¾İ³õÊ¼»¯
+#æ•°æ®åˆå§‹åŒ–
 mid_file = os.listdir(path_mid)
 if len(mid_file) >= 1:
 	for i in mid_file:
 		filename = path_mid + "\\" + i
 		if os.path.isfile(filename):
 			os.remove(filename)
-	print("³õÊ¼»¯ÒÑÍê³É!")
+	print("åˆå§‹åŒ–å·²å®Œæˆ!")
 else:
-	print("Êı¾İÎŞĞè³õÊ¼»¯!")
+	print("æ•°æ®æ— éœ€åˆå§‹åŒ–!")
 
 
 
-#×Ô¶¨Òåº¯Êı
+#è‡ªå®šä¹‰å‡½æ•°
+def fill_space(data):
+	for i in range(1,30):
+		text = " " * i
+		data = data.replace(text, 0)
+	return data.fillna(0,inplace=True)
+
 def output(data,text):
 	data.dropna(axis=0,how='all',inplace=True)
 	data.dropna(axis=1,how='all',inplace=True)
 	data = data.drop_duplicates()
-	data = data.replace(" ", 0)
-	data.fillna(0,inplace=True)
-	df = DataFrame(data[data.loc[:,'SAP±àºÅ'].notnull()])
+	space(data)
+	df = DataFrame(data[data.loc[:,'SAPç¼–å·'].notnull()])
 	try:
-		df.loc[:,'SAP±àºÅ'] = df.loc[:,'SAP±àºÅ'].astype('int')
+		df.loc[:,'SAPç¼–å·'] = df.loc[:,'SAPç¼–å·'].astype('int')
 	except ValueError:
-		df.loc[:,'SAP±àºÅ'] = df.loc[:,'SAP±àºÅ'].astype('str')
+		df.loc[:,'SAPç¼–å·'] = df.loc[:,'SAPç¼–å·'].astype('str')
 	if len(df.index) >= 1:
-		df.loc[:,'SAP±àºÅ'] = df.loc[:,'SAP±àºÅ'].astype('str')
-		df = df[(df.loc[:,'SAP±àºÅ'].notnull())&(df.loc[:,'SAP±àºÅ'].str.isnumeric())]
+		df.loc[:,'SAPç¼–å·'] = df.loc[:,'SAPç¼–å·'].astype('str')
+		df = df[(df.loc[:,'SAPç¼–å·'].notnull())&(df.loc[:,'SAPç¼–å·'].str.isnumeric())]
 		df = df.fillna(0)
-		df.loc[:,'SAP±àºÅ'] = df.loc[:,'SAP±àºÅ'].astype('int')
+		df.loc[:,'SAPç¼–å·'] = df.loc[:,'SAPç¼–å·'].astype('int')
 		filename = path_mid + "\\" + text + '.xlsx'
 		if len(df.index) >= 1:
 			df.to_excel(filename, index=False)
-			print(text + "±íÒÑÉú³É,ÈİÁ¿Îª: " + str(len(df)))
+			print(text + "è¡¨å·²ç”Ÿæˆ,å®¹é‡ä¸º: " + str(len(df)))
 		else:
-			print(text + "Êı¾İÎŞĞèµ¼³ö!")
+			print(text + "æ•°æ®æ— éœ€å¯¼å‡º!")
 	else:
-		print(text + "Êı¾İÎ´·¢ÏÖ!")
+		print(text + "æ•°æ®æœªå‘ç°!")
 
 def stan(data):
 	data.dropna(axis=0,how='all',inplace=True)
 	data.dropna(axis=1,how='all',inplace=True)
-	data.loc[:,'SAP±àºÅ'] = data.loc[:,'SAP±àºÅ'].astype('str')
-	data = data[(data.loc[:,'SAP±àºÅ'].notnull())&(data.loc[:,'SAP±àºÅ'].str.isnumeric())]
+	data.loc[:,'SAPç¼–å·'] = data.loc[:,'SAPç¼–å·'].astype('str')
+	data = data[(data.loc[:,'SAPç¼–å·'].notnull())&(data.loc[:,'SAPç¼–å·'].str.isnumeric())]
 	data = data.fillna(0)
-	data.loc[:,'SAP±àºÅ'] = data.loc[:,'SAP±àºÅ'].astype('int')
+	data.loc[:,'SAPç¼–å·'] = data.loc[:,'SAPç¼–å·'].astype('int')
 	return data
 
 
-#²ÎÊı´¦Àí
+#å‚æ•°å¤„ç†
 filename = os.listdir(path)
 
 kq = DataFrame()
@@ -109,88 +114,88 @@ for i in filename:
 	wb = xlrd.open_workbook(files)
 	names = wb.sheet_names()
 	for j in names:
-		if "¿¼ÇÚÍ³¼Æ" in j:
-			kq = kq.append(pd.read_excel(files,sheet_name="¿¼ÇÚÍ³¼Æ",header=1),ignore_index=True)
-		if "½òÌùÃ÷Ï¸" in j:
-			jt = jt.append(pd.read_excel(files,sheet_name="½òÌùÃ÷Ï¸"),ignore_index=True)
-		if "Éç±£Í³¼Æ" in j:
-			ss = ss.append(pd.read_excel(files,sheet_name="Éç±£Í³¼Æ",header=3),ignore_index=True)
-		if "Ë°ÎñÏµÍ³" in j:
-			sw = sw.append(pd.read_excel(files,sheet_name="×¨Ïî¸½¼Ó¿Û³ı-Ë°ÎñÏµÍ³"),ignore_index=True)
-		if "Ğ½×ÊÊı¾İ¼¯" in j:
-			sap = sap.append(pd.read_excel(files,sheet_name="Ğ½×ÊÊı¾İ¼¯-Sap"),ignore_index=True)
-		if "Ğ½×ÊÒì¶¯±í" in j:
-			xz = xz.append(pd.read_excel(files,sheet_name="Ğ½×ÊÒì¶¯±í"),ignore_index=True)
-		if "½òÌùÒì¶¯±í" in j:
-			jt1 = jt1.append(pd.read_excel(files,sheet_name="½òÌùÒì¶¯±í"),ignore_index=True)
-		if "Ğ¡Ê±¹¤" in j:
-			sl = sl.append(pd.read_excel(files,sheet_name="Ğ¡Ê±¹¤"),ignore_index=True)
-		if "ÒøĞĞ" in j:
-			bk = bk.append(pd.read_excel(files,sheet_name="ÒøĞĞÃ÷Ï¸",dtype={'ÒøĞĞ´úÂë':'str','ÒøĞĞÕËºÅ':'str'}),ignore_index=True)
+		if "è€ƒå‹¤ç»Ÿè®¡" in j:
+			kq = kq.append(pd.read_excel(files,sheet_name="è€ƒå‹¤ç»Ÿè®¡",header=1),ignore_index=True)
+		if "æ´¥è´´æ˜ç»†" in j:
+			jt = jt.append(pd.read_excel(files,sheet_name="æ´¥è´´æ˜ç»†"),ignore_index=True)
+		if "ç¤¾ä¿ç»Ÿè®¡" in j:
+			ss = ss.append(pd.read_excel(files,sheet_name="ç¤¾ä¿ç»Ÿè®¡",header=3),ignore_index=True)
+		if "ç¨åŠ¡ç³»ç»Ÿ" in j:
+			sw = sw.append(pd.read_excel(files,sheet_name="ä¸“é¡¹é™„åŠ æ‰£é™¤-ç¨åŠ¡ç³»ç»Ÿ"),ignore_index=True)
+		if "è–ªèµ„æ•°æ®é›†" in j:
+			sap = sap.append(pd.read_excel(files,sheet_name="è–ªèµ„æ•°æ®é›†-Sap"),ignore_index=True)
+		if "è–ªèµ„å¼‚åŠ¨è¡¨" in j:
+			xz = xz.append(pd.read_excel(files,sheet_name="è–ªèµ„å¼‚åŠ¨è¡¨"),ignore_index=True)
+		if "æ´¥è´´å¼‚åŠ¨è¡¨" in j:
+			jt1 = jt1.append(pd.read_excel(files,sheet_name="æ´¥è´´å¼‚åŠ¨è¡¨"),ignore_index=True)
+		if "å°æ—¶å·¥" in j:
+			sl = sl.append(pd.read_excel(files,sheet_name="å°æ—¶å·¥"),ignore_index=True)
+		if "é“¶è¡Œ" in j:
+			bk = bk.append(pd.read_excel(files,sheet_name="é“¶è¡Œæ˜ç»†",dtype={'é“¶è¡Œä»£ç ':'str','é“¶è¡Œè´¦å·':'str'}),ignore_index=True)
 
 
 
 
 
-#¿¼ÇÚ
+#è€ƒå‹¤
 kq = DataFrame(kq, columns=col_kq)
-output(kq,"¿¼ÇÚ")
+output(kq,"è€ƒå‹¤")
 
-#½òÌùÃ÷Ï¸
+#æ´¥è´´æ˜ç»†
 jt = DataFrame(jt, columns=col_jt)
-output(jt,"½òÌùÃ÷Ï¸")
+output(jt,"æ´¥è´´æ˜ç»†")
 
-#Éç±£
+#ç¤¾ä¿
 ss = DataFrame(ss, columns=col_ss)
-output(ss,"Éç±£")
+output(ss,"ç¤¾ä¿")
 
-#¸½¼Ó×¨Ïî
+#é™„åŠ ä¸“é¡¹
 stan(sw)
 stan(sap)
 if (len(sw.index) >= 1)&(len(sap.index) >= 1):
-	fj = pd.merge(sw,sap,on='SAP±àºÅ',how='outer')
-	fj.loc[:,'×ÓÅ®½ÌÓı'] = fj.loc[:,'ÀÛ¼Æ×ÓÅ®½ÌÓı_x'] - fj.loc[:,'ÀÛ¼Æ×ÓÅ®½ÌÓı_y']
-	fj.loc[:,'×¡·¿×â½ğ'] = fj.loc[:,'ÀÛ¼Æ×¡·¿×â½ğ_x'] - fj.loc[:,'ÀÛ¼Æ×¡·¿×â½ğ_y']
-	fj.loc[:,'×¡·¿´û¿î'] = fj.loc[:,'ÀÛ¼Æ×¡·¿´û¿î_x'] - fj.loc[:,'ÀÛ¼Æ×¡·¿´û¿î_y']
-	fj.loc[:,'ÉÄÑøÀÏÈË'] = fj.loc[:,'ÀÛ¼ÆÉÄÑøÀÏÈË_x'] - fj.loc[:,'ÀÛ¼ÆÉÄÑøÀÏÈË_y']
-	fj.loc[:,'¼ÌĞø½ÌÓı'] = fj.loc[:,'ÀÛ¼Æ¼ÌĞø½ÌÓı_x'] - fj.loc[:,'ÀÛ¼Æ¼ÌĞø½ÌÓı_y']
-	fj = DataFrame(fj,columns=['SAP±àºÅ','×ÓÅ®½ÌÓı','×¡·¿×â½ğ','×¡·¿´û¿î','ÉÄÑøÀÏÈË','¼ÌĞø½ÌÓı'])
-	output(fj,"¸½¼Ó×¨Ïî")
+	fj = pd.merge(sw,sap,on='SAPç¼–å·',how='outer')
+	fj.loc[:,'å­å¥³æ•™è‚²'] = fj.loc[:,'ç´¯è®¡å­å¥³æ•™è‚²_x'] - fj.loc[:,'ç´¯è®¡å­å¥³æ•™è‚²_y']
+	fj.loc[:,'ä½æˆ¿ç§Ÿé‡‘'] = fj.loc[:,'ç´¯è®¡ä½æˆ¿ç§Ÿé‡‘_x'] - fj.loc[:,'ç´¯è®¡ä½æˆ¿ç§Ÿé‡‘_y']
+	fj.loc[:,'ä½æˆ¿è´·æ¬¾'] = fj.loc[:,'ç´¯è®¡ä½æˆ¿è´·æ¬¾_x'] - fj.loc[:,'ç´¯è®¡ä½æˆ¿è´·æ¬¾_y']
+	fj.loc[:,'èµ¡å…»è€äºº'] = fj.loc[:,'ç´¯è®¡èµ¡å…»è€äºº_x'] - fj.loc[:,'ç´¯è®¡èµ¡å…»è€äºº_y']
+	fj.loc[:,'ç»§ç»­æ•™è‚²'] = fj.loc[:,'ç´¯è®¡ç»§ç»­æ•™è‚²_x'] - fj.loc[:,'ç´¯è®¡ç»§ç»­æ•™è‚²_y']
+	fj = DataFrame(fj,columns=['SAPç¼–å·','å­å¥³æ•™è‚²','ä½æˆ¿ç§Ÿé‡‘','ä½æˆ¿è´·æ¬¾','èµ¡å…»è€äºº','ç»§ç»­æ•™è‚²'])
+	output(fj,"é™„åŠ ä¸“é¡¹")
 else:
-	print("Î´·¢ÏÖÍêÕûµÄ¸½¼Ó×¨ÏîÏà¹ØÊı¾İ!")
+	print("æœªå‘ç°å®Œæ•´çš„é™„åŠ ä¸“é¡¹ç›¸å…³æ•°æ®!")
 
-#Ğ½×ÊÒì¶¯±í
+#è–ªèµ„å¼‚åŠ¨è¡¨
 if len(xz) >= 1:
-	xz = DataFrame(xz,columns=['SAP±àºÅ','ĞÕÃû','µ±µØ×îµÍ¹¤×Ê±ê×¼','Ğ½×Ê'])
-	output(xz,"Ğ½×ÊÒì¶¯±í")
+	xz = DataFrame(xz,columns=['SAPç¼–å·','å§“å','å½“åœ°æœ€ä½å·¥èµ„æ ‡å‡†','è–ªèµ„'])
+	output(xz,"è–ªèµ„å¼‚åŠ¨è¡¨")
 else:
-	print("Î´·¢ÏÖĞ½×ÊÒì¶¯Êı¾İ!")
+	print("æœªå‘ç°è–ªèµ„å¼‚åŠ¨æ•°æ®!")
 
-#½òÌùÒì¶¯±í
+#æ´¥è´´å¼‚åŠ¨è¡¨
 if len(jt1) >= 1:
-	jt1 = DataFrame(jt1,columns=['SAP±àºÅ','ĞÕÃû','ÏîÄ¿','½ğ¶î'])
-	output(jt1,"½òÌùÒì¶¯±í")
+	jt1 = DataFrame(jt1,columns=['SAPç¼–å·','å§“å','é¡¹ç›®','é‡‘é¢'])
+	output(jt1,"æ´¥è´´å¼‚åŠ¨è¡¨")
 else:
-	print("Î´·¢ÏÖ½òÌùÒì¶¯Êı¾İ!")
+	print("æœªå‘ç°æ´¥è´´å¼‚åŠ¨æ•°æ®!")
 
-#Ğ¡Ê±¹¤
+#å°æ—¶å·¥
 if len(sl) >= 1:
-	sl = DataFrame(sl,columns=['SAP±àºÅ','Ğ¡Ê±Êı','Ê±Ğ½','ÌìÊı','ÈÕĞ½','Ìá³É','Ê§»õ','ÀÍÎñË°'])
-	output(stan(sl),"Ğ¡Ê±¹¤")
+	sl = DataFrame(sl,columns=['SAPç¼–å·','å°æ—¶æ•°','æ—¶è–ª','å¤©æ•°','æ—¥è–ª','ææˆ','å¤±è´§','åŠ³åŠ¡ç¨'])
+	output(stan(sl),"å°æ—¶å·¥")
 else:
-	print("Î´·¢ÏÖĞ¡Ê±¹¤Êı¾İ!")
+	print("æœªå‘ç°å°æ—¶å·¥æ•°æ®!")
 
-#ÒøĞĞÃ÷Ï¸
+#é“¶è¡Œæ˜ç»†
 if len(bk) >= 1:
-	bk = DataFrame(bk,columns=['SAP±àºÅ','ÒøĞĞ´úÂë','ÒøĞĞÕËºÅ'])
+	bk = DataFrame(bk,columns=['SAPç¼–å·','é“¶è¡Œä»£ç ','é“¶è¡Œè´¦å·'])
 	bk = bk.dropna(axis=0,how='any')
-	bk.loc[:,'ÒøĞĞ´úÂë'] = bk.loc[:,'ÒøĞĞ´úÂë'].astype('str')
-	bk.loc[:,'ÒøĞĞÕËºÅ'] = bk.loc[:,'ÒøĞĞÕËºÅ'].astype('str')
-	output(bk,"ÒøĞĞÃ÷Ï¸")
+	bk.loc[:,'é“¶è¡Œä»£ç '] = bk.loc[:,'é“¶è¡Œä»£ç '].astype('str')
+	bk.loc[:,'é“¶è¡Œè´¦å·'] = bk.loc[:,'é“¶è¡Œè´¦å·'].astype('str')
+	output(bk,"é“¶è¡Œæ˜ç»†")
 else:
-	print("Î´·¢ÏÖÒøĞĞÃ÷Ï¸Êı¾İ!")
+	print("æœªå‘ç°é“¶è¡Œæ˜ç»†æ•°æ®!")
 
-print("\nÖĞ¼ä±í¸ñÒÑÍê³É´´½¨,Çë½øĞĞËãĞ½²Ù×÷,Ğ»Ğ»!")
+print("\nä¸­é—´è¡¨æ ¼å·²å®Œæˆåˆ›å»º,è¯·è¿›è¡Œç®—è–ªæ“ä½œ,è°¢è°¢!")
 input()
 
 
