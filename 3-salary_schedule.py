@@ -1,4 +1,4 @@
-#coding=GBK
+#--coding:utf-8--
 
 import pandas as pd
 from pandas import DataFrame,Series
@@ -7,277 +7,277 @@ import datetime
 import os
 import xlrd
 
-print("��ӭʹ�úϲ�����ģ��\nһ�н���Ȩ���鿪��������!\n������: ����\n")
+print("欢迎使用合并表格模板\n一切解释权均归开发者所有!\n开发者: 凡凡\n")
 
-#����ָ��
+#参数指定
 desk = os.path.join(os.path.expanduser("~"),"Desktop")
 
-path = 'D:\\��Ŀ¼\\��Ŀ\\�м����\\���ڲ���\\'
-path_mid = 'D:\\��Ŀ¼\\��Ŀ\\�м����\\'
+path = 'D:\\根目录\\项目\\中间表格\\日期参数\\'
+path_mid = 'D:\\根目录\\项目\\中间表格\\'
 path_text = desk + "\\1-text\\"
 path_char = desk + "\\2-split\\"
 
-month = (datetime.datetime.now() - datetime.timedelta(28,0,0,0)).month
-path_date = path + str(month) + '�¿�ʼ����������.xlsx'
+month = (datetime.datetime.now()).month-1
+path_date = path + str(month) + '月开始日期整理表.xlsx'
 
 df_date = pd.read_excel(path_date)
 
 
-#���������
-dir_or = {"����ҽ�ƽ��ɽ�����":"0917","����ҽ�ƽ��ɽ�˾":"0918","���ϲ��ɽ�����":"0919",
-		  "���ϲ��ɽ�˾":"0920","ҽ�Ʋ��ɽ�����":"0921","ҽ�Ʋ��ɽ�˾":"0922",
-		  "ʧҵ���ɽ�����":"0923","ʧҵ���ɽ�˾":"0924","���˲��ɽ�˾":"0926",
-		  "�������ɽ�˾":"0928","�����𲹽ɽ�����":"0929","�����𲹽ɽ�˾":"0930",
-		  "����ҽ�Ʋ��ɽ�����":"0931","����ҽ�Ʋ��ɽ�˾":"0932","�ۺϱ��չ�˾���ɽ��":"0937",
-		  "�ۺϱ��ո��˲��ɽ��":"0939","Сʱ������":"1004","����":"1202","��������":"1211",
-		  "������Ů��":"1213","ֵ�����":"1216","����1":"1217","����2":"1218","ȫ�ڽ�":"1304",
-		  "����֮��":"1306","����֮��":"1307","���ڷ���":"1311","��������":"1314","ҵ�����ʵ��ֵ":"1316",
-		  "�͵�������":"1317","�¶ȿ��˽���(�����ս�)":"1320","�¶ȿ��˽���(�������ս�)":"1321",
-		  "��������":"1322","ҵ�����𣨲������ս���":"1323","ҵ�����𣨼����ս���":"1324","�¶ȸ������Ž���":"1325",
-		  "���¶Ƚ���":"1326","����1":"1327","����2":"1328","��н����":"2101","���ڲ���":"2102",
-		  "���ٲ���":"2103","˰ǰ��������":"2108","ס������":"2111","�籣���˲���":"2112","��������˲���":"2113",
-		  "������":"2201","˰����������":"2203","�����籣":"2204","���۹�����":"2205","˰ǰ�����ۿ�":"2301",
-		  "���ڿۿ�":"2302","���ٿۿ�":"2303","ס�޿ۿ�":"2401","����ۿ�":"2402","ʧ���ۿ�":"2403",
-		  "������":"2404","˰�������ۿ�":"2405","ס��ˮ��Ѽ�����ˮ�ۿ�":"2410","ס�޷ѿۿ�-�ܲ�����ס�޼�ˮ���":"2411",
-		  "ס�޷ѿۿ�-�ܲ���������ˮ��":"2412","ס�޷ѿۿ�(÷��Է)":"2413","��Ů����":"/4J1",
-		  "ס������":"/4J4","ס�����":"/4J5","��������":"/4J6","��������":"/4J2","ҵ������(�������ս�)":"1323",
-		  "ҵ������(�����ս�)":"1324","���":"1324","ʧ��":"2403","����˰":"2405"}
-df_or = DataFrame(Series(dir_or),columns=['������'])
+#工资项参数
+dir_or = {"附加医疗缴纳金额个人":"0917","附加医疗缴纳金额公司":"0918","养老补缴金额个人":"0919",
+		  "养老补缴金额公司":"0920","医疗补缴金额个人":"0921","医疗补缴金额公司":"0922",
+		  "失业补缴金额个人":"0923","失业补缴金额公司":"0924","工伤补缴金额公司":"0926",
+		  "生育补缴金额公司":"0928","公积金补缴金额个人":"0929","公积金补缴金额公司":"0930",
+		  "附加医疗补缴金额个人":"0931","附加医疗补缴金额公司":"0932","综合保险公司补缴金额":"0937",
+		  "综合保险个人补缴金额":"0939","小时工工资":"1004","饭贴":"1202","其他津贴":"1211",
+		  "独生子女费":"1213","值班津贴":"1216","津贴1":"1217","津贴2":"1218","全勤奖":"1304",
+		  "销售之星":"1306","服务之星":"1307","长期服务奖":"1311","其他奖金":"1314","业绩提成实得值":"1316",
+		  "客单件奖金":"1317","月度考核奖金(计年终奖)":"1320","月度考核奖金(不计年终奖)":"1321",
+		  "婚育津贴":"1322","业绩奖金（不计年终奖）":"1323","业绩奖金（计年终奖）":"1324","月度个人评优奖金":"1325",
+		  "非月度奖金":"1326","奖金1":"1327","奖金2":"1328","调薪补款":"2101","考勤补款":"2102",
+		  "产假补款":"2103","税前其他补款":"2108","住房补贴":"2111","社保个人补款":"2112","公积金个人补款":"2113",
+		  "补偿金":"2201","税后其他补款":"2203","补扣社保":"2204","补扣公积金":"2205","税前其他扣款":"2301",
+		  "考勤扣款":"2302","病假扣款":"2303","住宿扣款":"2401","财务扣款":"2402","失货扣款":"2403",
+		  "工会会费":"2404","税后其他扣款":"2405","住宿水电费及饮用水扣款":"2410","住宿费扣款-总部六灶住宿及水电费":"2411",
+		  "住宿费扣款-总部六灶饮用水费":"2412","住宿费扣款(梅花苑)":"2413","子女教育":"/4J1",
+		  "住房贷款":"/4J4","住房租金":"/4J5","赡养老人":"/4J6","继续教育":"/4J2","业绩奖金(不计年终奖)":"1323",
+		  "业绩奖金(计年终奖)":"1324","提成":"1324","失货":"2403","劳务税":"2405"}
+df_or = DataFrame(Series(dir_or),columns=['工资项'])
 
-dir_jc = {"���Ͻ��ɽ�����":"901","���Ͻ��ɽ�˾":"902","ҽ�ƽ��ɽ�����":"903",
-		  "ҽ�ƽ��ɽ�˾":"904","ʧҵ���ɽ�����":"905","ʧҵ���ɽ�˾":"906",
-		  "���˽��ɽ�˾":"907","�������ɽ�˾":"908","��������ɽ�����":"909",
-		  "�ۺϱ��չ�˾���ɽ��":"912","Ӫҵ˰���Ͼ���":"940","�ۺϱ��ո��˽��ɽ��":"952",
-		  "��������ɽ�˾":"973","������͹��ʱ�׼":"1006","פ�����":"1201",
-		  "����":"1202","������":"1212","ְ������":"1214","��λ����":"1215",
-		  "���ս�����":"1312","��װ��":"1318","�����׼":"1329","������":"2404",
-		  "�����Ը�����˰��׼":"2800","˰��������":"2901"}
-df_jc = DataFrame(Series(dir_jc),columns=['������'])
+dir_jc = {"养老缴纳金额个人":"901","养老缴纳金额公司":"902","医疗缴纳金额个人":"903",
+		  "医疗缴纳金额公司":"904","失业缴纳金额个人":"905","失业缴纳金额公司":"906",
+		  "工伤缴纳金额公司":"907","生育缴纳金额公司":"908","公积金缴纳金额个人":"909",
+		  "综合保险公司缴纳金额":"912","营业税（南京）":"940","综合保险个人缴纳金额":"952",
+		  "公积金缴纳金额公司":"973","当地最低工资标准":"1006","驻外津贴":"1201",
+		  "饭贴":"1202","大店津贴":"1212","职级津贴":"1214","岗位津贴":"1215",
+		  "年终奖基数":"1312","服装费":"1318","奖金标准":"1329","工会会费":"2404",
+		  "政策性个人免税标准":"2800","税基调整项":"2901"}
+df_jc = DataFrame(Series(dir_jc),columns=['工资项'])
 
-dir_kq = {"���¼�н����":"3102","Ӧ��������":"3101","ʵ�ʳ�������":"3104","��������":"3203",
-		  "��н�¼�����":"3202","��������":"3204","�������":"3206","ɥ������":"3207",
-		  "��������":"3201","��������":"3209","��������":"3210","���������":"3205",
-		  "���˼�����":"3208","����δ�򿨣��Σ�":"3300","�ǵ���δ�򿨣��Σ�":"3301",
-		  "�ǵ��̳ٵ�0-30M":"3302","�ǵ��̳ٵ�31-60M":"3303","�ǵ��̳ٵ�61-120M":"3304",
-		  "�ǵ��̳ٵ�120M����":"3305","��������30M����":"3317","��������30M����":"3306",
-		  "���̳ٵ�0-10M":"3307","���̳ٵ�11-30M":"3308","���̳ٵ�31-60M":"3309",
-		  "���̳ٵ�61-120M":"3310","���̳ٵ�120M����":"3311","��������1Сʱ��":"3312",
-		  "��������1Сʱ����":"3313","ƽʱ�Ӱ�ʱ":"3401","���ռӰ�ʱ":"3403","��ĩ�Ӱ�ʱ":"3402"}
-df_kq = DataFrame(Series(dir_kq),columns=['������'])
+dir_kq = {"当月计薪天数":"3102","应出勤天数":"3101","实际出勤天数":"3104","病假天数":"3203",
+		  "无薪事假天数":"3202","产假天数":"3204","婚假天数":"3206","丧假天数":"3207",
+		  "空勤天数":"3201","旷工天数":"3209","出差天数":"3210","陪产假天数":"3205",
+		  "工伤假天数":"3208","店铺未打卡（次）":"3300","非店铺未打卡（次）":"3301",
+		  "非店铺迟到0-30M":"3302","非店铺迟到31-60M":"3303","非店铺迟到61-120M":"3304",
+		  "非店铺迟到120M以上":"3305","行政早退30M以内":"3317","行政早退30M以上":"3306",
+		  "店铺迟到0-10M":"3307","店铺迟到11-30M":"3308","店铺迟到31-60M":"3309",
+		  "店铺迟到61-120M":"3310","店铺迟到120M以上":"3311","店铺早退1小时内":"3312",
+		  "店铺早退1小时以上":"3313","平时加班时":"3401","节日加班时":"3403","周末加班时":"3402"}
+df_kq = DataFrame(Series(dir_kq),columns=['工资项'])
 
 
-#�Զ��庯��
+#自定义函数
 def opt(df, name, form='.xls'):
-	df_800 = df.loc[df.loc[:,'ϵͳ'] == 800,:]
-	df_830 = df.loc[df.loc[:,'ϵͳ'] == 830,:]
-	del df_800['ϵͳ']
-	del df_830['ϵͳ']
+	df_800 = df.loc[df.loc[:,'系统'] == 800,:]
+	df_830 = df.loc[df.loc[:,'系统'] == 830,:]
+	del df_800['系统']
+	del df_830['系统']
 	if len(df_800) >= 1:
-		df_800.sort_values(by=['SAP���'])
+		df_800.sort_values(by=['SAP编号'])
 	if len(df_830) >= 1:
-		df_830.sort_values(by=['SAP���'])
+		df_830.sort_values(by=['SAP编号'])
 	if form == '.xls':
 		if len(df_800) >= 1:
 			df_800.to_excel(path_char + name + "800" + form,index=False)
-			print(name + "800�ѵ���,����Ϊ: " + str(len(df_800)))
+			print(name + "800已导出,条数为: " + str(len(df_800)))
 		if len(df_830) >= 1:
 			df_830.to_excel(path_char + name + "830" + form,index=False)
-			print(name + "830�ѵ���,����Ϊ: " + str(len(df_830)))
+			print(name + "830已导出,条数为: " + str(len(df_830)))
 	elif form == '.txt':
 		if len(df_800) >= 1:
 			df_800.to_csv(path_text + name + "800" + form,index=False,sep='\t')
-			print(name + "800�ѵ���,����Ϊ: " + str(len(df_800)))
+			print(name + "800已导出,条数为: " + str(len(df_800)))
 		if len(df_830) >= 1:
 			df_830.to_csv(path_text + name + "830" + form,index=False,sep='\t')
-			print(name + "830�ѵ���,����Ϊ: " + str(len(df_830)))
+			print(name + "830已导出,条数为: " + str(len(df_830)))
 	else:
-		print("δ��ָ����ʽ�ύ����!")
+		print("未按指定格式提交参数!")
 
 
-#����
-if os.path.exists(path_mid + '����.xlsx'):
-	df_atd = pd.read_excel(path_mid + '����.xlsx')
-	df_atd = df_atd.melt(id_vars=['SAP���','����'], var_name="����", value_name="ʱ��")
-	df_atd = pd.merge(df_atd, df_kq, left_on='����', right_index=True, how='left')
-	df_atd = pd.merge(df_atd, df_date, left_on='SAP���', right_on='SAP��Ա���', how='left')
-	df_atd.loc[:,'ʱ��'] = df_atd.loc[:,'ʱ��'].astype('float')
-	df_attendance = DataFrame(df_atd[df_atd['ʱ��'] > 0],columns=['SAP���','����','������','��ʼ����','ʱ��','���','��λ','���','ϵͳ'])
+#考勤
+if os.path.exists(path_mid + '考勤.xlsx'):
+	df_atd = pd.read_excel(path_mid + '考勤.xlsx')
+	df_atd = df_atd.melt(id_vars=['SAP编号','姓名'], var_name="属性", value_name="时数")
+	df_atd = pd.merge(df_atd, df_kq, left_on='属性', right_index=True, how='left')
+	df_atd = pd.merge(df_atd, df_date, left_on='SAP编号', right_on='SAP人员编号', how='left')
+	df_atd.loc[:,'时数'] = df_atd.loc[:,'时数'].astype('float')
+	df_attendance = DataFrame(df_atd[df_atd['时数'] > 0],columns=['SAP编号','姓名','工资项','初始日期','时数','编号','单位','金额','系统'])
 	
-	opt(df_attendance,"����")
+	opt(df_attendance,"考勤")
 else:
-	print("δ���ֿ�������!")
+	print("未发现考勤数据!")
 
 
-#������ϸ
-if os.path.exists(path_mid + '������ϸ.xlsx'):
-	df_jt = pd.read_excel(path_mid + '������ϸ.xlsx')
-	df_jt.rename(columns={'������':'����'},inplace=True)
-	df_jt.loc[:,'���'] = df_jt.loc[:,'���'].apply(lambda x:round(x,2))
-	df_jt = pd.pivot_table(df_jt,index=['SAP���','����','����'], values=['���'],aggfunc='sum').reset_index()
-	df_jt.loc[df_jt['����'].str.contains("��"),"���"] = df_jt.loc[df_jt['����'].str.contains("��"),"���"].apply(lambda x:-abs(x))
+#津贴明细
+if os.path.exists(path_mid + '津贴明细.xlsx'):
+	df_jt = pd.read_excel(path_mid + '津贴明细.xlsx')
+	df_jt.rename(columns={'工资项':'属性'},inplace=True)
+	df_jt.loc[:,'金额'] = df_jt.loc[:,'金额'].apply(lambda x:round(x,2))
+	df_jt = pd.pivot_table(df_jt,index=['SAP编号','姓名','属性'], values=['金额'],aggfunc='sum').reset_index()
+	df_jt.loc[df_jt['属性'].str.contains("扣"),"金额"] = df_jt.loc[df_jt['属性'].str.contains("扣"),"金额"].apply(lambda x:-abs(x))
 else:
 	df_jt = DataFrame()
 
 
-#�籣
-if os.path.exists(path_mid + '�籣.xlsx'):
-	df_ss = pd.read_excel(path_mid + '�籣.xlsx')
-	df_ss = pd.merge(df_ss,df_date,left_on='SAP���',right_on='SAP��Ա���',how='left')
+#社保
+if os.path.exists(path_mid + '社保.xlsx'):
+	df_ss = pd.read_excel(path_mid + '社保.xlsx')
+	df_ss = pd.merge(df_ss,df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
 	
-	df_kg = DataFrame(df_ss[(df_ss['�籣�˻�']!=0)|(df_ss['�������˻�']!=0)],columns=['SAP���','����'])
+	df_kg = DataFrame(df_ss[(df_ss['社保账户']!=0)|(df_ss['公积金账户']!=0)],columns=['SAP编号','姓名'])
 	df_kg['0001'] = 'ZM'
 	df_kg['0002'] = 'ZM'
 	df_kg['0003'] = 'ZM'
 	df_kg['0004'] = 'ZM'
 	df_kg['0005'] = 'ZM'
-	df_kg = df_kg.melt(id_vars=['SAP���','����'],var_name="����Ϣ����",value_name='��̯��Χ')
-	df_kg = pd.merge(df_kg, df_ss, on=['SAP���','����'],how='left')
+	df_kg = df_kg.melt(id_vars=['SAP编号','姓名'],var_name="子信息类型",value_name='分摊范围')
+	df_kg = pd.merge(df_kg, df_ss, on=['SAP编号','姓名'],how='left')
 	
-	df_kg.loc[:,'��̯��׼'] = "01"
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0001')&(df_kg.loc[:,'���Ͻ��ɽ�����']==0)&(df_kg.loc[:,'���Ͻ��ɽ�˾']!=0),"��̯��׼"] = '02'
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0002')&(df_kg.loc[:,'ʧҵ���ɽ�����']==0)&(df_kg.loc[:,'ʧҵ���ɽ�˾']!=0),"��̯��׼"] = '02'
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0003')&(df_kg.loc[:,'ҽ�ƽ��ɽ�����']==0)&(df_kg.loc[:,'ҽ�ƽ��ɽ�˾']!=0),"��̯��׼"] = '02'
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0003')&(df_kg.loc[:,'ҽ�ƽ��ɽ�����']==0)&(df_kg.loc[:,'ҽ�ƽ��ɽ�˾']!=0),"��̯��׼"] = '02'
+	df_kg.loc[:,'分摊标准'] = "01"
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0001')&(df_kg.loc[:,'养老缴纳金额个人']==0)&(df_kg.loc[:,'养老缴纳金额公司']!=0),"分摊标准"] = '02'
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0002')&(df_kg.loc[:,'失业缴纳金额个人']==0)&(df_kg.loc[:,'失业缴纳金额公司']!=0),"分摊标准"] = '02'
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0003')&(df_kg.loc[:,'医疗缴纳金额个人']==0)&(df_kg.loc[:,'医疗缴纳金额公司']!=0),"分摊标准"] = '02'
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0003')&(df_kg.loc[:,'医疗缴纳金额个人']==0)&(df_kg.loc[:,'医疗缴纳金额公司']!=0),"分摊标准"] = '02'
 
-	df_kg.loc[:,'�����͹�Ա֧���ķ�̯'] = ""
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0001')&(df_kg.loc[:,'���Ͻ��ɽ�����'] + df_kg.loc[:,'���Ͻ��ɽ�˾'] > 0),"�����͹�Ա֧���ķ�̯"] = "X"
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0002')&(df_kg.loc[:,'ʧҵ���ɽ�����'] + df_kg.loc[:,'ʧҵ���ɽ�˾'] > 0),"�����͹�Ա֧���ķ�̯"] = "X"
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0003')&(df_kg.loc[:,'ҽ�ƽ��ɽ�����'] + df_kg.loc[:,'ҽ�ƽ��ɽ�˾'] > 0),"�����͹�Ա֧���ķ�̯"] = "X"
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0004')&(df_kg.loc[:,'���˽��ɽ�˾'] > 0),"�����͹�Ա֧���ķ�̯"] = "X"
-	df_kg.loc[(df_kg.loc[:,'����Ϣ����']=='0005')&(df_kg.loc[:,'�������ɽ�˾'] > 0),"�����͹�Ա֧���ķ�̯"] = "X"
+	df_kg.loc[:,'雇主和雇员支付的分摊'] = ""
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0001')&(df_kg.loc[:,'养老缴纳金额个人'] + df_kg.loc[:,'养老缴纳金额公司'] > 0),"雇主和雇员支付的分摊"] = "X"
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0002')&(df_kg.loc[:,'失业缴纳金额个人'] + df_kg.loc[:,'失业缴纳金额公司'] > 0),"雇主和雇员支付的分摊"] = "X"
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0003')&(df_kg.loc[:,'医疗缴纳金额个人'] + df_kg.loc[:,'医疗缴纳金额公司'] > 0),"雇主和雇员支付的分摊"] = "X"
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0004')&(df_kg.loc[:,'工伤缴纳金额公司'] > 0),"雇主和雇员支付的分摊"] = "X"
+	df_kg.loc[(df_kg.loc[:,'子信息类型']=='0005')&(df_kg.loc[:,'生育缴纳金额公司'] > 0),"雇主和雇员支付的分摊"] = "X"
 	
-	df_kg.loc[:,'�޷�̯'] = "X"
-	df_kg.loc[df_kg.loc[:,'�����͹�Ա֧���ķ�̯'] == "X", "�޷�̯"] = ""
-	df_kg.loc[:,'��̯����ԭ�����'] = '03'
-	df_kg.loc[df_kg.loc[:,'�޷�̯'] == "X", '��̯����ԭ�����'] = '14'
-	df_kg.loc[:,'��ҵ'] = '01'
-	df_kg.loc[:,'��̯��'] = "ZM01"
+	df_kg.loc[:,'无分摊'] = "X"
+	df_kg.loc[df_kg.loc[:,'雇主和雇员支付的分摊'] == "X", "无分摊"] = ""
+	df_kg.loc[:,'分摊更改原因代码'] = '03'
+	df_kg.loc[df_kg.loc[:,'无分摊'] == "X", '分摊更改原因代码'] = '14'
+	df_kg.loc[:,'行业'] = '01'
+	df_kg.loc[:,'分摊组'] = "ZM01"
 	
-	df_kg_end = DataFrame(df_kg,columns=['SAP���', '����Ϣ����','��ʼ����','��̯����ԭ�����','���յ����','��̯��Χ','��ҵ','��̯��','��̯��׼','�����͹�Ա֧���ķ�̯','�������ķ�̯֧��','�޷�̯','ϵͳ'])
-	opt(df_kg_end, "�籣��̯", '.txt')
+	df_kg_end = DataFrame(df_kg,columns=['SAP编号', '子信息类型','开始日期','分摊更改原因代码','保险单编号','分摊范围','行业','分摊组','分摊标准','雇主和雇员支付的分摊','仅雇主的分摊支付','无分摊','系统'])
+	opt(df_kg_end, "社保分摊", '.txt')
 	
 	
-	df_kg_gjj = DataFrame(df_ss[df_ss['�������˻�'] != 0])
-	df_kg_gjj.loc[:,'����'] = "ZM"
-	df_kg_gjj.loc[:,'��'] = "ZM01"
-	df_kg_gjj.loc[:,'����'] = "01"
+	df_kg_gjj = DataFrame(df_ss[df_ss['公积金账户'] != 0])
+	df_kg_gjj.loc[:,'地区'] = "ZM"
+	df_kg_gjj.loc[:,'组'] = "ZM01"
+	df_kg_gjj.loc[:,'级别'] = "01"
 
-	df_kg_gjj.loc[:,'�����͹�Ա����'] = ""
-	df_kg_gjj.loc[df_kg_gjj.loc[:,'��������ɽ�����'] + df_kg_gjj.loc[:,'��������ɽ�˾'] > 0,"�����͹�Ա����"] = "X"
-	df_kg_gjj.loc[:,'������'] = "X"
-	df_kg_gjj.loc[df_kg_gjj.loc[:,'�����͹�Ա����'] == "X","������"] = ""
-	df_kg_gjj_end = DataFrame(df_kg_gjj, columns=['SAP���','��ʼ����','ס���������˺�','����','��','����','�����͹�Ա����','��λ����','Ա������','������','ϵͳ'])
-	opt(df_kg_gjj_end, "������", '.txt')
+	df_kg_gjj.loc[:,'雇主和雇员缴纳'] = ""
+	df_kg_gjj.loc[df_kg_gjj.loc[:,'公积金缴纳金额个人'] + df_kg_gjj.loc[:,'公积金缴纳金额公司'] > 0,"雇主和雇员缴纳"] = "X"
+	df_kg_gjj.loc[:,'不缴纳'] = "X"
+	df_kg_gjj.loc[df_kg_gjj.loc[:,'雇主和雇员缴纳'] == "X","不缴纳"] = ""
+	df_kg_gjj_end = DataFrame(df_kg_gjj, columns=['SAP编号','开始日期','住房公积金账号','地区','组','级别','雇主和雇员缴纳','单位缴纳','员工缴纳','不缴纳','系统'])
+	opt(df_kg_gjj_end, "公积金", '.txt')
 	
 	
-	df_ss_mid = pd.read_excel(path_mid + '�籣.xlsx')
-	del df_ss_mid['�籣�˻�']
-	del df_ss_mid['�������˻�']
-	df_ss_mid = df_ss_mid.melt(id_vars=['SAP���','����'],var_name='����',value_name='���')
+	df_ss_mid = pd.read_excel(path_mid + '社保.xlsx')
+	del df_ss_mid['社保账户']
+	del df_ss_mid['公积金账户']
+	df_ss_mid = df_ss_mid.melt(id_vars=['SAP编号','姓名'],var_name='属性',value_name='金额')
 else:
 	df_ss_mid = DataFrame()
 
 
-#����ר��
-if os.path.exists(path_mid + '����ר��.xlsx'):
-	df_fj = DataFrame(pd.read_excel(path_mid + '����ר��.xlsx'),columns=['SAP���','����','��Ů����','ס�����','ס������','��������','��������'])
-	df_fj = df_fj.melt(id_vars=['SAP���','����'], var_name="����", value_name="���")
+#附加专项
+if os.path.exists(path_mid + '附加专项.xlsx'):
+	df_fj = DataFrame(pd.read_excel(path_mid + '附加专项.xlsx'),columns=['SAP编号','姓名','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
+	df_fj = df_fj.melt(id_vars=['SAP编号','姓名'], var_name="属性", value_name="金额")
 else:
 	df_fj = DataFrame()
 
 
-#н���춯��
-if os.path.exists(path_mid + 'н���춯��.xlsx'):
-	df_xz = pd.read_excel(path_mid + 'н���춯��.xlsx')
-	df_xz.loc[:,'����ԭ��'] = '50'
-	df_xz.loc[:,'���ʵȼ�����'] = "01"
-	df_xz.loc[:,'����'] = '0001'
-	df_xz.loc[:,'����'] = 'A0'
-	df_xz.loc[:,'�������ʹ�����'] = 1001
-	df_xz.loc[:,'�������ʽ��'] = df_xz.loc[:,'������͹��ʱ�׼']
-	df_xz.loc[:,'ְ�����ʹ�����'] = 1002
-	df_xz.loc[:,'ְ�����ʽ��'] = df_xz.loc[:,'н��'] - df_xz.loc[:,'������͹��ʱ�׼']
-	df_xz.loc[:,'�̶����ʱ�׼������'] = 1003
-	df_xz.loc[:,'�̶�����'] = df_xz.loc[:,'н��']
-	df_xz = pd.merge(df_xz, df_date,left_on='SAP���',right_on='SAP��Ա���',how='left')
-	df_xz_end = DataFrame(df_xz[df_xz['н��']>0],columns = ['SAP���','����','��ʼ����','����ԭ��','���ʵȼ�����','��Χ','����','����','�������ʹ�����',\
-						  '�������ʽ��','ְ�����ʹ�����','ְ�����ʽ��','�̶����ʱ�׼������','�̶�����','Сʱ��������Ŀ','ϵͳ'])
-	opt(df_xz_end,"н��",'.xls')
+#薪资异动表
+if os.path.exists(path_mid + '薪资异动表.xlsx'):
+	df_xz = pd.read_excel(path_mid + '薪资异动表.xlsx')
+	df_xz.loc[:,'更改原因'] = '50'
+	df_xz.loc[:,'工资等级类型'] = "01"
+	df_xz.loc[:,'级别'] = '0001'
+	df_xz.loc[:,'档次'] = 'A0'
+	df_xz.loc[:,'基本工资工资项'] = 1001
+	df_xz.loc[:,'基本工资金额'] = df_xz.loc[:,'当地最低工资标准']
+	df_xz.loc[:,'职级工资工资项'] = 1002
+	df_xz.loc[:,'职级工资金额'] = df_xz.loc[:,'薪资'] - df_xz.loc[:,'当地最低工资标准']
+	df_xz.loc[:,'固定工资标准工资项'] = 1003
+	df_xz.loc[:,'固定工资'] = df_xz.loc[:,'薪资']
+	df_xz = pd.merge(df_xz, df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
+	df_xz_end = DataFrame(df_xz[df_xz['薪资']>0],columns = ['SAP编号','姓名','开始日期','更改原因','工资等级类型','范围','级别','档次','基本工资工资项',\
+						  '基本工资金额','职级工资工资项','职级工资金额','固定工资标准工资项','固定工资','小时工工资项目','系统'])
+	opt(df_xz_end,"薪资",'.xls')
 	
 	
-	df_xz_dj = DataFrame(df_xz[df_xz['н��']==0],columns=['SAP��Ա���','��ʼ����','ϵͳ'])
-	opt(df_xz_dj,"н�ʶ���",'.txt')
+	df_xz_dj = DataFrame(df_xz[df_xz['薪资']==0],columns=['SAP人员编号','开始日期','系统'])
+	opt(df_xz_dj,"薪资定界",'.txt')
 	
 	
-	df_xz_jc = DataFrame(df_xz, columns=['SAP���','����','������͹��ʱ�׼'])
-	df_xz_jc = df_xz_jc.melt(id_vars=['SAP���','����'], var_name='����', value_name='���')
+	df_xz_jc = DataFrame(df_xz, columns=['SAP编号','姓名','当地最低工资标准'])
+	df_xz_jc = df_xz_jc.melt(id_vars=['SAP编号','姓名'], var_name='属性', value_name='金额')
 else:
 	df_xz_jc = DataFrame()
 
 
-#�����춯��
-if os.path.exists(path_mid + '�����춯��.xlsx'):
-	df_jty = pd.read_excel(path_mid + '�����춯��.xlsx')
-	df_jty.rename(columns={'��Ŀ':'����'}, inplace=True)
+#津贴异动表
+if os.path.exists(path_mid + '津贴异动表.xlsx'):
+	df_jty = pd.read_excel(path_mid + '津贴异动表.xlsx')
+	df_jty.rename(columns={'项目':'属性'}, inplace=True)
 else:
 	df_jty = DataFrame()
 
 
-#Сʱ��
-if os.path.exists(path_mid + 'Сʱ��.xlsx'):
-	df_sl = DataFrame(pd.read_excel(path_mid + 'Сʱ��.xlsx'),columns=['SAP���','����','Сʱ��','ʱн','����','��н','���','ʧ��','����˰'])
+#小时工
+if os.path.exists(path_mid + '小时工.xlsx'):
+	df_sl = DataFrame(pd.read_excel(path_mid + '小时工.xlsx'),columns=['SAP编号','姓名','小时数','时薪','天数','日薪','提成','失货','劳务税'])
 	
 	df_sl.fillna(0,inplace=True)
-	df_sl.loc[:,'Сʱ������'] = df_sl.loc[:,'Сʱ��'] * df_sl.loc[:,'ʱн'] + df_sl.loc[:,'����'] * df_sl.loc[:,'��н']
-	df_sl = DataFrame(df_sl, columns=['SAP���','����','Сʱ������','���','ʧ��','����˰'])
-	df_sl = pd.pivot_table(df_sl, index=['SAP���'], values=['Сʱ������','���','ʧ��','����˰'], aggfunc='sum').reset_index()
+	df_sl.loc[:,'小时工工资'] = df_sl.loc[:,'小时数'] * df_sl.loc[:,'时薪'] + df_sl.loc[:,'天数'] * df_sl.loc[:,'日薪']
+	df_sl = DataFrame(df_sl, columns=['SAP编号','姓名','小时工工资','提成','失货','劳务税'])
+	df_sl = pd.pivot_table(df_sl, index=['SAP编号'], values=['小时工工资','提成','失货','劳务税'], aggfunc='sum').reset_index()
 
-	df_sl_end = df_sl.melt(id_vars=['SAP���'], var_name="����", value_name='���')
-	df_sl_end = DataFrame(df_sl_end, columns=['SAP���','����','����','���'])
+	df_sl_end = df_sl.melt(id_vars=['SAP编号'], var_name="属性", value_name='金额')
+	df_sl_end = DataFrame(df_sl_end, columns=['SAP编号','姓名','属性','金额'])
 else:
 	df_sl_end = DataFrame()
 
 
-#������ϸ
-if os.path.exists(path_mid + '������ϸ.xlsx'):
-	df_bk = DataFrame(pd.read_excel(path_mid + '������ϸ.xlsx'))
-	df_bk.loc[:,'��Ҫ����'] = 0
-	df_bk = pd.merge(df_bk, df_date, left_on='SAP���', right_on='SAP��Ա���', how='left')
-	df_bk_end = DataFrame(df_bk, columns=['SAP���','��ʼ����','��������','��Ҫ����','����','���д���','�����˺�','ϵͳ'])
-	opt(df_bk_end, "������ϸ",'.txt')
+#银行明细
+if os.path.exists(path_mid + '银行明细.xlsx'):
+	df_bk = DataFrame(pd.read_excel(path_mid + '银行明细.xlsx'))
+	df_bk.loc[:,'主要银行'] = 0
+	df_bk = pd.merge(df_bk, df_date, left_on='SAP编号', right_on='SAP人员编号', how='left')
+	df_bk_end = DataFrame(df_bk, columns=['SAP编号','开始日期','结束日期','主要银行','姓名','银行代码','银行账号','系统'])
+	opt(df_bk_end, "银行明细",'.txt')
 else:
-	print("δ��������������Ϣ!")
+	print("未发现银行数据信息!")
 
 
-#����������
+#经常性整合
 df_jcx = pd.concat([df_ss_mid,df_jty,df_xz_jc], axis=0)
-df_jcx = pd.merge(df_jcx, df_date, left_on='SAP���',right_on='SAP��Ա���',how='left')
-df_jcx = pd.merge(df_jcx, df_jc, left_on='����', right_index=True,how='left')
-df_jcx = df_jcx[df_jcx['������'].notnull()]
-df_jcx.loc[:,"������"] = df_jcx.loc[:,"������"].astype('int').astype('str')
-df_jcx.loc[:,"������"] = df_jcx.loc[:,"������"].apply(lambda x:x.zfill(4))
+df_jcx = pd.merge(df_jcx, df_date, left_on='SAP编号',right_on='SAP人员编号',how='left')
+df_jcx = pd.merge(df_jcx, df_jc, left_on='属性', right_index=True,how='left')
+df_jcx = df_jcx[df_jcx['工资项'].notnull()]
+df_jcx.loc[:,"工资项"] = df_jcx.loc[:,"工资项"].astype('int').astype('str')
+df_jcx.loc[:,"工资项"] = df_jcx.loc[:,"工资项"].apply(lambda x:x.zfill(4))
 
-df_jcx_opt = DataFrame(df_jcx[(df_jcx['���']>0)&(df_jcx['������'].notnull())],columns=['SAP���','����','��ʼ����','��������','������','���','���','��λ','ϵͳ'])
-opt(df_jcx_opt, "������", '.xls')
+df_jcx_opt = DataFrame(df_jcx[(df_jcx['金额']>0)&(df_jcx['工资项'].notnull())],columns=['SAP编号','姓名','开始日期','结束日期','工资项','金额','编号','单位','系统'])
+opt(df_jcx_opt, "经常性", '.xls')
 
-df_jcx_dj = DataFrame(df_jcx[(df_jcx['���']==0)&(df_jcx['������'].notnull())],columns=['SAP���','������','��ʼ����','ϵͳ'])
-df_jcx_dj = DataFrame(df_jcx_dj[(df_jcx_dj['������']=="1214")|(df_jcx_dj['������']=="1202")|(df_jcx_dj['������']=="1201")|(df_jcx_dj['������']=="1212")|(df_jcx_dj['������']=="1215")])
-opt(df_jcx_dj, "�����Զ���", '.txt')
+df_jcx_dj = DataFrame(df_jcx[(df_jcx['金额']==0)&(df_jcx['工资项'].notnull())],columns=['SAP编号','工资项','开始日期','系统'])
+df_jcx_dj = DataFrame(df_jcx_dj[(df_jcx_dj['工资项']=="1214")|(df_jcx_dj['工资项']=="1202")|(df_jcx_dj['工资项']=="1201")|(df_jcx_dj['工资项']=="1212")|(df_jcx_dj['工资项']=="1215")])
+opt(df_jcx_dj, "经常性定界", '.txt')
 
 
-#żȻ������
+#偶然性整合
 df_orx = pd.concat([df_jt,df_ss_mid,df_fj,df_sl_end],axis=0)
-df_orx = pd.merge(df_orx, df_date, left_on='SAP���',right_on='SAP��Ա���',how='left')
-df_orx = pd.merge(df_orx, df_or, left_on='����', right_index=True,how='left')
-df_orx = df_orx[df_orx['������'].notnull()]
-df_orx.loc[:,'������'] = df_orx.loc[:,'������'].astype('str')
-df_orx.loc[df_orx['������'].str.find(".")!=-1,"������"] = df_orx.loc[df_orx['������'].str.find(".")!=-1,"������"].astype('int').astype('str')
-df_orx.loc[:,"������"] = df_orx.loc[:,"������"].apply(lambda x:x.zfill(4))
+df_orx = pd.merge(df_orx, df_date, left_on='SAP编号',right_on='SAP人员编号',how='left')
+df_orx = pd.merge(df_orx, df_or, left_on='属性', right_index=True,how='left')
+df_orx = df_orx[df_orx['工资项'].notnull()]
+df_orx.loc[:,'工资项'] = df_orx.loc[:,'工资项'].astype('str')
+df_orx.loc[df_orx['工资项'].str.find(".")!=-1,"工资项"] = df_orx.loc[df_orx['工资项'].str.find(".")!=-1,"工资项"].astype('int').astype('str')
+df_orx.loc[:,"工资项"] = df_orx.loc[:,"工资项"].apply(lambda x:x.zfill(4))
 
-df_orx_opt = DataFrame(df_orx[(df_orx['���']>0)&(df_orx['������'].notnull())&(df_orx['��ʼ����'].notnull())],columns=['SAP���','����','������','���','���','��λ','��ʼ����','������','ϵͳ'])
-df_orx_opt.loc[:,'��ʼ����'] = df_orx_opt.loc[:,'��ʼ����'].astype('int')
-df_orx_opt.loc[:,'ϵͳ'] = df_orx_opt.loc[:,'ϵͳ'].astype('int')
-opt(df_orx_opt,"żȻ��", '.xls')
+df_orx_opt = DataFrame(df_orx[(df_orx['金额']>0)&(df_orx['工资项'].notnull())&(df_orx['初始日期'].notnull())],columns=['SAP编号','姓名','工资项','金额','编号','单位','初始日期','分配编号','系统'])
+df_orx_opt.loc[:,'初始日期'] = df_orx_opt.loc[:,'初始日期'].astype('int')
+df_orx_opt.loc[:,'系统'] = df_orx_opt.loc[:,'系统'].astype('int')
+opt(df_orx_opt,"偶然性", '.xls')
 
-print("\nģ����Ѿ��������,�뵼��ϵͳ!")
+print("\n模板表已经制作完成,请导入系统!")
 input()
