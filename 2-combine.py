@@ -65,22 +65,25 @@ def output(data,text):
 	data.dropna(axis=1,how='all',inplace=True)
 	data = data.drop_duplicates()
 	fill_space(data)
-	df = DataFrame(data[data.loc[:,'SAP编号'].notnull()])
-	try:
-		df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
-	except ValueError:
-		df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('str')
-	if len(df.index) >= 1:
-		df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('str')
-		df = df[(df.loc[:,'SAP编号'].notnull())&(df.loc[:,'SAP编号'].str.isnumeric())]
-		df = df.fillna(0)
-		df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
-		filename = path_mid + "\\" + text + '.xlsx'
+	if len(data) >= 1:
+		df = DataFrame(data[data.loc[:,'SAP编号'].notnull()])
+		try:
+			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
+		except ValueError:
+			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('str')
 		if len(df.index) >= 1:
-			df.to_excel(filename, index=False)
-			print(text + "表已生成,容量为: " + str(len(df)))
+			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('str')
+			df = df[(df.loc[:,'SAP编号'].notnull())&(df.loc[:,'SAP编号'].str.isnumeric())]
+			df = df.fillna(0)
+			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
+			filename = path_mid + "\\" + text + '.xlsx'
+			if len(df.index) >= 1:
+				df.to_excel(filename, index=False)
+				print(text + "表已生成,容量为: " + str(len(df)))
+			else:
+				print(text + "数据无需导出!")
 		else:
-			print(text + "数据无需导出!")
+			print(text + "数据未发现!")
 	else:
 		print(text + "数据未发现!")
 
