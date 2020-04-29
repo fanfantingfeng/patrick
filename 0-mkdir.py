@@ -7,24 +7,24 @@ import datetime
 import os
 import xlrd
 
-print("»¶Ó­Ê¹ÓÃÂ·¾¶´´½¨Ä£°å\nÒ»ÇĞ½âÊÍÈ¨¾ù¹é¿ª·¢ÕßËùÓĞ!\n¿ª·¢Õß: ·²·²\n")
+print("æ¬¢è¿ä½¿ç”¨è·¯å¾„åˆ›å»ºæ¨¡æ¿\nä¸€åˆ‡è§£é‡Šæƒå‡å½’å¼€å‘è€…æ‰€æœ‰!\nå¼€å‘è€…: å‡¡å‡¡\n")
 
-#²ÎÊıÖ¸¶¨
+#å‚æ•°æŒ‡å®š
 desk = os.path.join(os.path.expanduser("~"),"Desktop")
 
-path = 'D:\¸ùÄ¿Â¼\ÏîÄ¿\ÖĞ¼ä±í¸ñ\ÈÕÆÚ²ÎÊı'
-path_mid = 'D:\¸ùÄ¿Â¼\ÏîÄ¿\ÖĞ¼ä±í¸ñ'
+path = 'D:\æ ¹ç›®å½•\é¡¹ç›®\ä¸­é—´è¡¨æ ¼\æ—¥æœŸå‚æ•°'
+path_mid = 'D:\æ ¹ç›®å½•\é¡¹ç›®\ä¸­é—´è¡¨æ ¼'
 path_text = desk + "\\1-text"
 path_char = desk + "\\2-split"
-path_workbook = desk + "\\¹¤×ÊÃ÷Ï¸"
+path_workbook = desk + "\\å·¥èµ„æ˜ç»†"
 
 
 def crt_dir(path):
 	if os.path.exists(path):
-		print("ÎÄ¼şÂ·¾¶ÒÑ´æÔÚ,ÎŞĞèÖØĞÂ´´½¨!")
+		print("æ–‡ä»¶è·¯å¾„å·²å­˜åœ¨,æ— éœ€é‡æ–°åˆ›å»º!")
 	else:
-		os.path.makedir(path)
-		print("ÎÄ¼şÂ·¾¶ÒÑ´´½¨!")
+		os.path.makedirs(path)
+		print("æ–‡ä»¶è·¯å¾„å·²åˆ›å»º!")
 
 list_dir = [path, path_mid, path_text, path_char,path_workbook]
 for i in list_dir:
