@@ -23,7 +23,7 @@ def crt_dir(path):
 	if os.path.exists(path):
 		print("文件路径已存在,无需重新创建!")
 	else:
-		os.path.makedirs(path)
+		os.makedirs(path)
 		print("文件路径已创建!")
 
 list_dir = [path, path_mid, path_text, path_char,path_workbook]
