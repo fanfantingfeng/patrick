@@ -241,7 +241,7 @@ else:
 #银行明细
 if os.path.exists(path_mid + '银行明细.xlsx'):
 	df_bk = DataFrame(pd.read_excel(path_mid + '银行明细.xlsx'))
-	df_bk.loc[:,'主要银行'] = 0
+	df_bk.loc[:,'主要银行'] = str(0)
 	df_bk = pd.merge(df_bk, df_date, left_on='SAP编号', right_on='SAP人员编号', how='left')
 	df_bk_end = DataFrame(df_bk, columns=['SAP编号','开始日期','结束日期','主要银行','姓名','银行代码','银行账号','系统'])
 	opt(df_bk_end, "银行明细",'.txt')
