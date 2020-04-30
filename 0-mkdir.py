@@ -1,4 +1,4 @@
-#coding=GBK
+#--coding:utf-8--
 
 import pandas as pd
 from pandas import DataFrame,Series
