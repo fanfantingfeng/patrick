@@ -1,4 +1,4 @@
-#coding=GBK
+#--coding:utf-8--
 
 import pandas as pd
 from pandas import DataFrame,Series
@@ -7,50 +7,50 @@ import datetime
 import os
 import xlrd
 
-print("»¶Ó­Ê¹ÓÃºÏ²¢±í¸ñÄ£°å\nÒ»ÇÐ½âÊÍÈ¨¾ù¹é¿ª·¢ÕßËùÓÐ!\n¿ª·¢Õß: ·²·²\n")
+print("æ¬¢è¿Žä½¿ç”¨åˆå¹¶è¡¨æ ¼æ¨¡æ¿\nä¸€åˆ‡è§£é‡Šæƒå‡å½’å¼€å‘è€…æ‰€æœ‰!\nå¼€å‘è€…: å‡¡å‡¡\n")
 
-#²ÎÊýÖ¸¶¨
-path = 'C:\\Users\\hq01ug601\\Desktop\\¹¤×ÊÃ÷Ï¸'
-path_mid = 'D:\\¸ùÄ¿Â¼\\ÏîÄ¿\\ÖÐ¼ä±í¸ñ'
-
-
-#ÈËÊÂ·¶Î§²ÎÊý
-dir_hrlim = {"ÈËÊÂ·¶Î§":"·¶Î§","×Ü²¿×ÜÖ±×Ü¼à¼¶ÒÔÉÏ":"SH","×Ü²¿MB×Ü¼à¼¶ÒÔÉÏ":"SH","×Ü²¿MC×Ü¼à¼¶ÒÔÉÏ":"SH",
-			"×Ü²¿°î¹º×Ü¼à¼¶ÒÔÉÏ":"SH","×Ü²¿×ÜÖ±¾­Àí¼¶Àà":"SH","×Ü²¿MB¾­Àí¼¶Àà":"SH","×Ü²¿MC¾­Àí¼¶Àà":"SH",
-			"×Ü²¿°î¹º¾­Àí¼¶Àà":"SH","×Ü²¿×ÜÖ±Ö÷¹Ü¼¶Àà":"SH","×Ü²¿MBÖ÷¹Ü¼¶Àà":"SH","×Ü²¿MCÖ÷¹Ü¼¶Àà":"SH",
-			"×Ü²¿°î¹ºÖ÷¹Ü¼¶Àà":"SH","×Ü²¿×ÜÖ±Ô±¹¤":"SH","×Ü²¿MBÔ±¹¤":"SH","×Ü²¿MCÔ±¹¤":"SH",
-			"×Ü²¿°î¹ºÔ±¹¤":"SH","×Ü²¿×ÜÖ±×¤Íâ":"SH","×Ü²¿MB×¤Íâ":"SH","×Ü²¿MC×¤Íâ":"SH",
-			"×Ü²¿°î¹º×¤Íâ":"SH","×Ü²¿ÌØÊâÈËÔ±":"SH","×Ü²¿MBÇøÓò×¤Íâ":"SH","×Ü²¿MCÇøÓò×¤Íâ":"SH",
-			"×Ü²¿°î¹ºÇøÓò×¤Íâ":"SH","×Ü²¿×ÜÖ±ÇøÓò×¤Íâ":"SH","ÉÏº£×ÜÖ±":"SH","ÉÏº£MB":"SH",
-			"ÉÏº£MC":"SH","ËÕÖÝ×ÜÖ±":"SU","ËÕÖÝMB":"SU","ËÕÖÝMC":"SU","ÄÏ¾©×ÜÖ±":"NJ",
-			"ÄÏ¾©MB":"NJ","ÄÏ¾©MC":"NJ","ºÏ·Ê×ÜÖ±":"HF","ºÏ·ÊMB":"HF","ºÏ·ÊMC":"HF",
-			"º¼ÖÝ×ÜÖ±":"HZ","º¼ÖÝMB":"HZ","º¼ÖÝMC":"HZ","Äþ²¨×ÜÖ±":"NB","Äþ²¨MB":"NB",
-			"Äþ²¨MC":"NB","ÎÂÖÝ×ÜÖ±":"WZ","ÎÂÖÝMB":"WZ","ÎÂÖÝMC":"WZ","ÎÂÖÝÇøÓòÅäËÍ":"WZ",
-			"±±¾©×ÜÖ±":"BJ","±±¾©MB":"BJ","±±¾©MC":"BJ","Ìì½ò×ÜÖ±":"TJ","Ìì½òMB":"TJ",
-			"Ìì½òMC":"TJ","Ìì½òÇøÓòÅäËÍ":"TJ","¼ÃÄÏ×ÜÖ±":"JN","¼ÃÄÏMB":"JN","¼ÃÄÏMC":"JN",
-			"¹þ¶û±õ×ÜÖ±":"HE","¹þ¶û±õMB":"HE","¹þ¶û±õMC":"HE","³¤´º×ÜÖ±":"CC","³¤´ºMB":"CC",
-			"³¤´ºMC":"CC","ÉòÑô×ÜÖ±":"SY","ÉòÑôMB":"SY","ÉòÑôMC":"SY","ÉòÑôÇøÓòÅäËÍ":"SY",
-			"Ì«Ô­×ÜÖ±":"TY","Ì«Ô­MB":"TY","Ì«Ô­MC":"TY","Ê¯¼Ò×¯×ÜÖ±":"SJ","Ê¯¼Ò×¯MB":"SJ",
-			"Ê¯¼Ò×¯MC":"SJ","Ö£ÖÝ×ÜÖ±":"ZZ","Ö£ÖÝMB":"ZZ","Ö£ÖÝMC":"ZZ","Î÷°²×ÜÖ±":"SX",
-			"Î÷°²MB":"SX","Î÷°²MC":"SX","Î÷°²ÇøÓòÅäËÍ":"SX","À¼ÖÝ×ÜÖ±":"LZ","À¼ÖÝMB":"LZ",
-			"À¼ÖÝMC":"LZ","ÎÚÂ³Ä¾Æë×ÜÖ±":"WQ","ÎÚÂ³Ä¾ÆëMB":"WQ","ÎÚÂ³Ä¾ÆëMC":"WQ","³É¶¼×ÜÖ±":"CD",
-			"³É¶¼MB":"CD","³É¶¼MC":"CD","³É¶¼ÇøÓòÅäËÍ":"CD","ÖØÇì×ÜÖ±":"CQ","ÖØÇìMB":"CQ",
-			"ÖØÇìMC":"CQ","À¥Ã÷×ÜÖ±":"KM","À¥Ã÷MB":"KM","À¥Ã÷MC":"KM","¹ãÖÝÇøÓòÅäËÍ":"GZ",
-			"¹ãÖÝ×ÜÖ±":"GZ","¹ãÖÝMB":"GZ","¹ãÖÝMC":"GZ","ÉîÛÚ×ÜÖ±":"SZ","ÉîÛÚMB":"SZ",
-			"ÉîÛÚMC":"SZ","ÄÏÄþ×ÜÖ±":"NN","ÄÏÄþMB":"NN","ÄÏÄþMC":"NN","Îäºº×ÜÖ±":"WH",
-			"ÎäººMB":"WH","ÎäººMC":"WH","ÎäººÇøÓòÅäËÍ":"WH","ÄÏ²ý×ÜÖ±":"NC","ÄÏ²ýMB":"NC",
-			"ÄÏ²ýMC":"NC","¸£ÖÝ×ÜÖ±":"FZ","¸£ÖÝMB":"FZ","¸£ÖÝMC":"FZ","¶«Ý¸×ÜÖ±":"DG",
-			"¶«Ý¸MB":"DG","¶«Ý¸MC":"DG","³¤É³×ÜÖ±":"CS","³¤É³MB":"CS","³¤É³MC":"CS",
-			"¹óÑô×ÜÖ±":"GY","¹óÑôMB":"GY","¹óÑôMC":"GY","Çàµº×ÜÖ±":"QD","ÇàµºMB":"QD",
-			"ÇàµºMC":"QD","ÄÚÃÉ¹Å×ÜÖ±":"NM","ÄÚÃÉ¹ÅMB":"NM"}
-
-#¾­³£ÐÔ²ÎÊý
+#å‚æ•°æŒ‡å®š
+path = 'C:\\Users\\hq01ug601\\Desktop\\å·¥èµ„æ˜Žç»†'
+path_mid = 'D:\\æ ¹ç›®å½•\\é¡¹ç›®\\ä¸­é—´è¡¨æ ¼'
 
 
-root = 'D:\\¸ùÄ¿Â¼\\ÈËÊÂÒì¶¯\\'
+#äººäº‹èŒƒå›´å‚æ•°
+dir_hrlim = {"äººäº‹èŒƒå›´":"èŒƒå›´","æ€»éƒ¨æ€»ç›´æ€»ç›‘çº§ä»¥ä¸Š":"SH","æ€»éƒ¨MBæ€»ç›‘çº§ä»¥ä¸Š":"SH","æ€»éƒ¨MCæ€»ç›‘çº§ä»¥ä¸Š":"SH",
+			"æ€»éƒ¨é‚¦è´­æ€»ç›‘çº§ä»¥ä¸Š":"SH","æ€»éƒ¨æ€»ç›´ç»ç†çº§ç±»":"SH","æ€»éƒ¨MBç»ç†çº§ç±»":"SH","æ€»éƒ¨MCç»ç†çº§ç±»":"SH",
+			"æ€»éƒ¨é‚¦è´­ç»ç†çº§ç±»":"SH","æ€»éƒ¨æ€»ç›´ä¸»ç®¡çº§ç±»":"SH","æ€»éƒ¨MBä¸»ç®¡çº§ç±»":"SH","æ€»éƒ¨MCä¸»ç®¡çº§ç±»":"SH",
+			"æ€»éƒ¨é‚¦è´­ä¸»ç®¡çº§ç±»":"SH","æ€»éƒ¨æ€»ç›´å‘˜å·¥":"SH","æ€»éƒ¨MBå‘˜å·¥":"SH","æ€»éƒ¨MCå‘˜å·¥":"SH",
+			"æ€»éƒ¨é‚¦è´­å‘˜å·¥":"SH","æ€»éƒ¨æ€»ç›´é©»å¤–":"SH","æ€»éƒ¨MBé©»å¤–":"SH","æ€»éƒ¨MCé©»å¤–":"SH",
+			"æ€»éƒ¨é‚¦è´­é©»å¤–":"SH","æ€»éƒ¨ç‰¹æ®Šäººå‘˜":"SH","æ€»éƒ¨MBåŒºåŸŸé©»å¤–":"SH","æ€»éƒ¨MCåŒºåŸŸé©»å¤–":"SH",
+			"æ€»éƒ¨é‚¦è´­åŒºåŸŸé©»å¤–":"SH","æ€»éƒ¨æ€»ç›´åŒºåŸŸé©»å¤–":"SH","ä¸Šæµ·æ€»ç›´":"SH","ä¸Šæµ·MB":"SH",
+			"ä¸Šæµ·MC":"SH","è‹å·žæ€»ç›´":"SU","è‹å·žMB":"SU","è‹å·žMC":"SU","å—äº¬æ€»ç›´":"NJ",
+			"å—äº¬MB":"NJ","å—äº¬MC":"NJ","åˆè‚¥æ€»ç›´":"HF","åˆè‚¥MB":"HF","åˆè‚¥MC":"HF",
+			"æ­å·žæ€»ç›´":"HZ","æ­å·žMB":"HZ","æ­å·žMC":"HZ","å®æ³¢æ€»ç›´":"NB","å®æ³¢MB":"NB",
+			"å®æ³¢MC":"NB","æ¸©å·žæ€»ç›´":"WZ","æ¸©å·žMB":"WZ","æ¸©å·žMC":"WZ","æ¸©å·žåŒºåŸŸé…é€":"WZ",
+			"åŒ—äº¬æ€»ç›´":"BJ","åŒ—äº¬MB":"BJ","åŒ—äº¬MC":"BJ","å¤©æ´¥æ€»ç›´":"TJ","å¤©æ´¥MB":"TJ",
+			"å¤©æ´¥MC":"TJ","å¤©æ´¥åŒºåŸŸé…é€":"TJ","æµŽå—æ€»ç›´":"JN","æµŽå—MB":"JN","æµŽå—MC":"JN",
+			"å“ˆå°”æ»¨æ€»ç›´":"HE","å“ˆå°”æ»¨MB":"HE","å“ˆå°”æ»¨MC":"HE","é•¿æ˜¥æ€»ç›´":"CC","é•¿æ˜¥MB":"CC",
+			"é•¿æ˜¥MC":"CC","æ²ˆé˜³æ€»ç›´":"SY","æ²ˆé˜³MB":"SY","æ²ˆé˜³MC":"SY","æ²ˆé˜³åŒºåŸŸé…é€":"SY",
+			"å¤ªåŽŸæ€»ç›´":"TY","å¤ªåŽŸMB":"TY","å¤ªåŽŸMC":"TY","çŸ³å®¶åº„æ€»ç›´":"SJ","çŸ³å®¶åº„MB":"SJ",
+			"çŸ³å®¶åº„MC":"SJ","éƒ‘å·žæ€»ç›´":"ZZ","éƒ‘å·žMB":"ZZ","éƒ‘å·žMC":"ZZ","è¥¿å®‰æ€»ç›´":"SX",
+			"è¥¿å®‰MB":"SX","è¥¿å®‰MC":"SX","è¥¿å®‰åŒºåŸŸé…é€":"SX","å…°å·žæ€»ç›´":"LZ","å…°å·žMB":"LZ",
+			"å…°å·žMC":"LZ","ä¹Œé²æœ¨é½æ€»ç›´":"WQ","ä¹Œé²æœ¨é½MB":"WQ","ä¹Œé²æœ¨é½MC":"WQ","æˆéƒ½æ€»ç›´":"CD",
+			"æˆéƒ½MB":"CD","æˆéƒ½MC":"CD","æˆéƒ½åŒºåŸŸé…é€":"CD","é‡åº†æ€»ç›´":"CQ","é‡åº†MB":"CQ",
+			"é‡åº†MC":"CQ","æ˜†æ˜Žæ€»ç›´":"KM","æ˜†æ˜ŽMB":"KM","æ˜†æ˜ŽMC":"KM","å¹¿å·žåŒºåŸŸé…é€":"GZ",
+			"å¹¿å·žæ€»ç›´":"GZ","å¹¿å·žMB":"GZ","å¹¿å·žMC":"GZ","æ·±åœ³æ€»ç›´":"SZ","æ·±åœ³MB":"SZ",
+			"æ·±åœ³MC":"SZ","å—å®æ€»ç›´":"NN","å—å®MB":"NN","å—å®MC":"NN","æ­¦æ±‰æ€»ç›´":"WH",
+			"æ­¦æ±‰MB":"WH","æ­¦æ±‰MC":"WH","æ­¦æ±‰åŒºåŸŸé…é€":"WH","å—æ˜Œæ€»ç›´":"NC","å—æ˜ŒMB":"NC",
+			"å—æ˜ŒMC":"NC","ç¦å·žæ€»ç›´":"FZ","ç¦å·žMB":"FZ","ç¦å·žMC":"FZ","ä¸œèŽžæ€»ç›´":"DG",
+			"ä¸œèŽžMB":"DG","ä¸œèŽžMC":"DG","é•¿æ²™æ€»ç›´":"CS","é•¿æ²™MB":"CS","é•¿æ²™MC":"CS",
+			"è´µé˜³æ€»ç›´":"GY","è´µé˜³MB":"GY","è´µé˜³MC":"GY","é’å²›æ€»ç›´":"QD","é’å²›MB":"QD",
+			"é’å²›MC":"QD","å†…è’™å¤æ€»ç›´":"NM","å†…è’™å¤MB":"NM"}
+
+#ç»å¸¸æ€§å‚æ•°
+
+
+root = 'D:\\æ ¹ç›®å½•\\äººäº‹å¼‚åŠ¨\\'
 month = (datetime.datetime.now() - datetime.timedelta(30,0,0,0)).month
-file800 = root + str(month) + "ÔÂÈËÊÂÒì¶¯±í-800.xlsx"
-file830 = root + str(month) + "ÔÂÈËÊÂÒì¶¯±í-830.xlsx"
+file800 = root + str(month) + "æœˆäººäº‹å¼‚åŠ¨è¡¨-800.xlsx"
+file830 = root + str(month) + "æœˆäººäº‹å¼‚åŠ¨è¡¨-830.xlsx"
 
 if (os.path.exists(file800)) & (os.path.exists(file800)):
 	df = pd.read_excel(file800).append(pd.read_excel(file830))
@@ -60,34 +60,34 @@ elif os.path.exists(file830):
 	df = pd.read_excel(file830)
 else:
 	df = DataFrame()
-	print("Î´ÕÒµ½µ±ÔÂÏà¹ØÈËÊÂÒì¶¯±í!")
+	print("æœªæ‰¾åˆ°å½“æœˆç›¸å…³äººäº‹å¼‚åŠ¨è¡¨!")
 	
 df = df.reset_index()
 
 def stan(data):
 	for i in range(len(data.index)):
-		data.loc[i,'ÔÂ³õÈÕÆÚ'] = datetime.datetime(int(data.loc[i,'Äê']),int(data.loc[i,'ÔÂ']),1)
-		data.loc[i,'ÔÂÄ©ÈÕÆÚ'] = datetime.datetime(int(data.loc[i,'Äê']),int(data.loc[i,'ÔÂ'])+1,1) - datetime.timedelta(1,0,0,0)
-		data.loc[i,'³õÊ¼ÈÕÆÚ'] = data.loc[i,'ÔÂÄ©ÈÕÆÚ'].strftime("%Y%m%d")
-		if data.loc[i,'ÈëÖ°'] == 'ÐÂÔ±¹¤ÈëÖ°':
-			data.loc[i,'¿ªÊ¼ÈÕÆÚ'] = data.loc[i,'ÈëÖ°ÈÕÆÚ'].strftime("%Y%m%d")
+		data.loc[i,'æœˆåˆæ—¥æœŸ'] = datetime.datetime(int(data.loc[i,'å¹´']),int(data.loc[i,'æœˆ']),1)
+		data.loc[i,'æœˆæœ«æ—¥æœŸ'] = datetime.datetime(int(data.loc[i,'å¹´']),int(data.loc[i,'æœˆ'])+1,1) - datetime.timedelta(1,0,0,0)
+		data.loc[i,'åˆå§‹æ—¥æœŸ'] = data.loc[i,'æœˆæœ«æ—¥æœŸ'].strftime("%Y%m%d")
+		if data.loc[i,'å…¥èŒ'] == 'æ–°å‘˜å·¥å…¥èŒ':
+			data.loc[i,'å¼€å§‹æ—¥æœŸ'] = data.loc[i,'å…¥èŒæ—¥æœŸ'].strftime("%Y%m%d")
 		else:
-			data.loc[i,'¿ªÊ¼ÈÕÆÚ'] = data.loc[i,'ÔÂ³õÈÕÆÚ'].strftime("%Y%m%d")
-	data.loc[:,'½áÊøÈÕÆÚ'] = "9991231"
+			data.loc[i,'å¼€å§‹æ—¥æœŸ'] = data.loc[i,'æœˆåˆæ—¥æœŸ'].strftime("%Y%m%d")
+	data.loc[:,'ç»“æŸæ—¥æœŸ'] = "9991231"
 	return data
 
 if len(df) >= 1:
-	hrlim = DataFrame(Series(dir_hrlim),columns=['·¶Î§'])
+	hrlim = DataFrame(Series(dir_hrlim),columns=['èŒƒå›´'])
 	stan(df)
-	data = pd.merge(df, hrlim, left_on='ÈËÊÂ·¶Î§ÃèÊö', right_index=True, how='left')
-	data.loc[:,'ÏµÍ³'] = 800
-	data.loc[data['SAPÈËÔ±±àºÅ'] > 6000000,"ÏµÍ³"] = 830
-	data_end = data.loc[:,["SAPÈËÔ±±àºÅ","¿ªÊ¼ÈÕÆÚ","³õÊ¼ÈÕÆÚ","½áÊøÈÕÆÚ","·¶Î§","ÏµÍ³"]]
-	file_name = 'D:\\¸ùÄ¿Â¼\\ÏîÄ¿\\ÖÐ¼ä±í¸ñ\\ÈÕÆÚ²ÎÊý\\' + str(month) +'ÔÂ¿ªÊ¼ÈÕÆÚÕûÀí±í.xlsx'
+	data = pd.merge(df, hrlim, left_on='äººäº‹èŒƒå›´æè¿°', right_index=True, how='left')
+	data.loc[:,'ç³»ç»Ÿ'] = 800
+	data.loc[data['SAPäººå‘˜ç¼–å·'] > 6000000,"ç³»ç»Ÿ"] = 830
+	data_end = data.loc[:,["SAPäººå‘˜ç¼–å·","å¼€å§‹æ—¥æœŸ","åˆå§‹æ—¥æœŸ","ç»“æŸæ—¥æœŸ","èŒƒå›´","ç³»ç»Ÿ"]]
+	file_name = 'D:\\æ ¹ç›®å½•\\é¡¹ç›®\\ä¸­é—´è¡¨æ ¼\\æ—¥æœŸå‚æ•°\\' + str(month) +'æœˆå¼€å§‹æ—¥æœŸæ•´ç†è¡¨.xlsx'
 	data_end.to_excel(file_name, index=False)
-	print("¿ªÊ¼ÈÕÆÚÕûÀí±íÒÑ³É¹¦µ¼³ö!")
+	print("å¼€å§‹æ—¥æœŸæ•´ç†è¡¨å·²æˆåŠŸå¯¼å‡º!")
 else:
-	print("¿ªÊ¼ÈÕÆÚÕûÀí±íÎ´µ¼³ö,ÇëºË¶ÔÈËÊÂÒì¶¯±íÐÅÏ¢!")
+	print("å¼€å§‹æ—¥æœŸæ•´ç†è¡¨æœªå¯¼å‡º,è¯·æ ¸å¯¹äººäº‹å¼‚åŠ¨è¡¨ä¿¡æ¯!")
 
 input()
 
