@@ -48,7 +48,7 @@ dir_hrlim = {"人事范围":"范围","总部总直总监级以上":"SH","总部M
 
 
 root = 'D:\\根目录\\人事异动\\'
-month = (datetime.datetime.now() - datetime.timedelta(30,0,0,0)).month
+month = datetime.datetime.now().month-1
 file800 = root + str(month) + "月人事异动表-800.xlsx"
 file830 = root + str(month) + "月人事异动表-830.xlsx"
 
