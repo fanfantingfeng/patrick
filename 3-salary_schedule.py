@@ -85,9 +85,11 @@ def opt(df, name, form='.xls'):
 			print(name + "830已导出,条数为: " + str(len(df_830)))
 	elif form == '.txt':
 		if len(df_800) >= 1:
+			df_800.loc[:,'开始日期'] = df_800.loc[:,'开始日期'].astype('int')
 			df_800.to_csv(path_text + name + "800" + form,index=False,sep='\t')
 			print(name + "800已导出,条数为: " + str(len(df_800)))
 		if len(df_830) >= 1:
+			df_830.loc[:,'开始日期'] = df_830.loc[:,'开始日期'].astype('int')
 			df_830.to_csv(path_text + name + "830" + form,index=False,sep='\t')
 			print(name + "830已导出,条数为: " + str(len(df_830)))
 	else:
