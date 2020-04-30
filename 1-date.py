@@ -73,7 +73,7 @@ def stan(data):
 			data.loc[i,'开始日期'] = data.loc[i,'入职日期'].strftime("%Y%m%d")
 		else:
 			data.loc[i,'开始日期'] = data.loc[i,'月初日期'].strftime("%Y%m%d")
-	data.loc[:,'结束日期'] = "9991231"
+	data.loc[:,'结束日期'] = "99991231"
 	return data
 
 if len(df) >= 1:
