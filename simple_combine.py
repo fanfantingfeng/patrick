@@ -1,4 +1,4 @@
-#coding=GBK
+#--coding:utf-8--
 
 import pandas as pd
 from pandas import DataFrame,Series
@@ -9,7 +9,7 @@ import xlrd
 
 desk = os.path.expanduser('~') + '\\Desktop'
 
-path = desk + '\\»ã×Ü'
+path = desk + '\\æ±‡æ€»'
 
 data = DataFrame()
 
@@ -18,8 +18,8 @@ for i in filenames:
 	file_path = path + '\\' + i
 	data = data.append(pd.read_excel(file_path))
 
-data.to_excel(desk + "\\ºÏ²¢Êı¾İ.xlsx", index=False)
-print("ºÏ²¢ÒÑÍê³É!")
+data.to_excel(desk + "\\åˆå¹¶æ•°æ®.xlsx", index=False)
+print("åˆå¹¶å·²å®Œæˆ!")
 	
 
 
