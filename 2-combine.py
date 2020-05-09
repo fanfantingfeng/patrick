@@ -145,15 +145,15 @@ else:
 
 
 #考勤
-kq = DataFrame(kq, columns=col_kq)
+kq = DataFrame(kq[kq['SAP编号'].notnull()], columns=col_kq)
 output(kq,"考勤")
 
 #津贴明细
-jt = DataFrame(jt, columns=col_jt)
+jt = DataFrame(jt[jt['SAP编号'].notnull()], columns=col_jt)
 output(jt,"津贴明细")
 
 #社保
-ss = DataFrame(ss, columns=col_ss)
+ss = DataFrame(ss[ss['SAP编号'].notnull()], columns=col_ss)
 output(ss,"社保")
 
 #附加专项
@@ -166,35 +166,35 @@ if (len(sw.index) >= 1)&(len(sap.index) >= 1):
 	fj.loc[:,'住房贷款'] = fj.loc[:,'累计住房贷款_x'] - fj.loc[:,'累计住房贷款_y']
 	fj.loc[:,'赡养老人'] = fj.loc[:,'累计赡养老人_x'] - fj.loc[:,'累计赡养老人_y']
 	fj.loc[:,'继续教育'] = fj.loc[:,'累计继续教育_x'] - fj.loc[:,'累计继续教育_y']
-	fj = DataFrame(fj,columns=['SAP编号','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
+	fj = DataFrame(fj[fj['SAP编号'].notnull()],columns=['SAP编号','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
 	output(fj,"附加专项")
 else:
 	print("未发现完整的附加专项相关数据!")
 
 #薪资异动表
 if len(xz) >= 1:
-	xz = DataFrame(xz,columns=['SAP编号','姓名','当地最低工资标准','薪资'])
+	xz = DataFrame(xz[xz['SAP编号'].notnull()],columns=['SAP编号','姓名','当地最低工资标准','薪资'])
 	output(xz,"薪资异动表")
 else:
 	print("未发现薪资异动数据!")
 
 #津贴异动表
 if len(jt1) >= 1:
-	jt1 = DataFrame(jt1,columns=['SAP编号','姓名','项目','金额'])
+	jt1 = DataFrame(jt1[jt1['SAP编号'].notnull()],columns=['SAP编号','姓名','项目','金额'])
 	output(jt1,"津贴异动表")
 else:
 	print("未发现津贴异动数据!")
 
 #小时工
 if len(sl) >= 1:
-	sl = DataFrame(sl,columns=['SAP编号','小时数','时薪','天数','日薪','提成','失货','劳务税'])
+	sl = DataFrame(sl[sl['SAP编号'].notnull()],columns=['SAP编号','小时数','时薪','天数','日薪','提成','失货','劳务税'])
 	output(stan(sl),"小时工")
 else:
 	print("未发现小时工数据!")
 
 #银行明细
 if len(bk) >= 1:
-	bk = DataFrame(bk,columns=['SAP编号','银行代码','银行账号'])
+	bk = DataFrame(bk[bk['SAP编号'].notnull()],columns=['SAP编号','银行代码','银行账号'])
 	bk = bk.dropna(axis=0,how='any')
 	bk.loc[:,'银行代码'] = bk.loc[:,'银行代码'].astype('str')
 	bk.loc[:,'银行账号'] = bk.loc[:,'银行账号'].astype('str')
