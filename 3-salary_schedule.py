@@ -202,7 +202,7 @@ if os.path.exists(path_mid + '薪资异动表.xlsx'):
 	df_xz.loc[:,'固定工资标准工资项'] = 1003
 	df_xz.loc[:,'固定工资'] = df_xz.loc[:,'薪资']
 	df_xz = pd.merge(df_xz, df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
-	df_xz_end = DataFrame(df_xz[df_xz['薪资']>0],columns = ['SAP编号','姓名','开始日期','更改原因','工资等级类型','范围','级别','档次','基本工资工资项',\
+	df_xz_end = DataFrame(df_xz[df_xz['薪资']>0],columns = ['SAP编号','姓名','开始日期','结束日期','更改原因','工资等级类型','范围','级别','档次','基本工资工资项',\
 						  '基本工资金额','职级工资工资项','职级工资金额','固定工资标准工资项','固定工资','小时工工资项目','系统'])
 	opt(df_xz_end,"薪资",'.xls')
 	
