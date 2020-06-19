@@ -262,6 +262,8 @@ if len(df_tax)>=1:
 			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'开始日期']
 		elif (pd.notna(df_tax.loc[i,'调动']))&(df_tax.loc[i,'人事范围描述'][:2] != df_tax.loc[i,'人事范围描述.1'][:2]):
 			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'调动日期'].strftime("%Y%m01")
+		elif (df_tax.loc[i,'入职']=="新员工入职")|(df_tax.loc[i,'入职']=="重新入职"):
+			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'开始日期']
 		elif pd.isna(df_tax.loc[i,'上一次离职日期']):
 			df_tax.loc[i,'税收录入日期'] = ""
 		elif (df_tax.loc[i,'入职'] == "重新入职")&(gap(df_tax.loc[i,'上一次离职日期'], df_tax.loc[i,'入职日期'])==1):
