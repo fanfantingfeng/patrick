@@ -6,6 +6,7 @@ from pandas import Series, DataFrame
 import datetime
 import arrow
 from dateutil.relativedelta import relativedelta
+import calendar
 
 print('''
 本模板表适用于当月人事异动表的准备工作
@@ -32,8 +33,8 @@ data.loc[data['入职'] == "新员工入职", "开始日期"] = data.loc[data['�
 data.loc[:,"结束日期"] = "99991231"
 
 file = 'D:\\根目录\\参数表\\参数表.xlsx'
-city = pd.read_excel(file,sheet_name='Sheet1')
-cost_center = pd.read_excel(file,sheet_name='Sheet2',dtype={'特殊成本中心':str})
+city = pd.read_excel(file,sheet_name='人事范围')
+cost_center = pd.read_excel(file,sheet_name='成本中心',dtype={'特殊成本中心':str})
 
 data = pd.merge(data, city, left_on="人事范围描述", right_on="人事范围", how="left")
 
@@ -46,6 +47,12 @@ def output(data,text):
 	else:
 		print("无需导出" + text)
 
+#获取某日期对应月份次月的最后一天
+def get_endofmonth_next(date):
+	date = date + relativedelta(months=1)
+	weekday,last_num = calendar.monthrange(date.year, date.month)
+	date_new = datetime.datetime(date.year,date.month,day=last_num)
+	return (date_new).strftime("%Y%m%d")
 
 
 #计划工作时间
@@ -151,6 +158,7 @@ if len(df_cc)>=1:
 	df_cc.loc[df_cc['组织参数'].str.contains('bonwe品牌'), '品牌'] = 'MB'
 	df_cc.loc[df_cc['组织参数'].str.contains('CITY品牌'), '品牌'] = 'MC'
 	df_cc.loc[df_cc['组织参数'].str.contains('童装'), '品牌'] = '童装'
+	df_cc.loc[df_cc['组织参数'].str.contains('Moomoo品牌'), '品牌'] = 'MM'
 	df_cc.loc[df_cc['组织参数'].str.contains('褀'), '品牌'] = '褀'
 	df_cc['职能'] = "其他"
 	df_cc.loc[df_cc['组织单元描述'].str.endswith('销售公司'),'职能'] = '分公司'
@@ -183,7 +191,7 @@ if len(df_cc)>=1:
 	df_cc.loc[:,'订单_3'] = "0102"
 	fil_dz = (df_cc['店铺职级'].str.contains("店长"))|(df_cc['店铺职级'].str.contains("店助"))|(df_cc['店铺职级'].str.contains("店铺形象"))|(df_cc['店铺职级'].str.contains("商品"))
 	df_cc.loc[fil_dz,"订单_3"] = "0103"
-	fil_dg = (df_cc['店铺职级'].str.contains("导购"))|(df_cc['店铺职级'].str.contains("店员"))|(df_cc['店铺职级'].str.contains("训练员"))
+	fil_dg = (df_cc['店铺职级'].str.contains("导购"))|(df_cc['店铺职级'].str.contains("店员"))|(df_cc['店铺职级'].str.contains("训练员"))|(df_cc['店铺职级'].str.contains("牛人"))
 	df_cc.loc[fil_dg, "订单_3"] = "0101"
 
 	df_cc.loc[df_cc['店铺职级'].isnull(),"订单编号"] = ""
@@ -202,79 +210,57 @@ else:
 
 #个人所得税
 df = DataFrame(data)
+df.reset_index()
 
-fil_tax = (df['入职'].notnull())|(df['调动'].notnull())|(df['晋级'].notnull())|(df['特殊事件'].notnull())|(df['离职'].notnull())|(df['转正'].notnull())
-df_tax= DataFrame(df[fil_tax])
-df_tax = df_tax.reset_index()
+column_incident = ["入职", "转正", "转正原因", "调动", "调动原因", "晋级", "晋/降级", "离职", "离职原因", "特殊事件", "特殊事件原因","人事范围描述.1"]
+df.loc[:, column_incident] = df.loc[:, column_incident].fillna("无")
 
+df.loc[:,"有无事件"] = "有"
+df.loc[(df['入职'] == "无")&(df['转正'] == "无")&(df['调动'] == "无")&(df['晋级'] == "无")&(df['离职'] == "无")&(df['特殊事件'] == "无"),"有无事件"] = "无"
+df.loc[(df['调动原因']=="公司内调动"), "有无事件"] = "无"
+
+df.loc[:,"是否更换法人公司"] = "否"
+df.loc[(df['有无事件'] == "有")&(df['人事范围描述.1'] != "无")&(df.loc[:,'人事范围描述'].apply(lambda x:x[:2])!=df.loc[:,'人事范围描述.1'].apply(lambda x:x[:2])),"是否更换法人公司"] = "是"
+df.loc[df['特殊事件原因']=="合同改签","是否更换法人公司"] = "是"
+
+df.loc[:,"是否隔月重入职"] = "否"
+df.loc[:,"上一次离职日期"] = df.loc[:,"上一次离职日期"].fillna(datetime.datetime(1900,1,1))
+#df.loc[:,"上一次离职日期"] = df.loc[:,"上一次离职日期"].apply(lambda x:datetime.datetime.strptime(x,"%Y-%m-%d"))
+#df.loc[:,"入职日期"] = df.loc[:,"入职日期"].apply(lambda x:datetime.datetime.strptime(x,"%Y-%m-%d"))
+df.loc[:,'核对日期1'] = df.loc[:,'上一次离职日期'].apply(lambda x:datetime.datetime((x+relativedelta(months=1)).year,(x+relativedelta(months=1)).month,1))
+df.loc[:,'核对日期2'] = df.loc[:,'入职日期'].apply(lambda x:datetime.datetime(x.year,x.month,1))
+df.loc[(df['核对日期1'] == df['核对日期2'])&(df['上一次离职日期'].apply(lambda x:x.day == 1))&(df['入职']!="无"), "是否隔月重入职"] = "是"
+df.loc[(df['核对日期1'] < df['核对日期2'])&(df['上一次离职日期'] != datetime.datetime(1900,1,1))&(df['入职']!="无") ,"是否隔月重入职"] = "是"
+
+df.loc[:,"纳税终止日期"] = ""
+df.loc[df['离职'] != "无", "纳税终止日期"] = df.loc[df['离职'] != "无", "离职日期"].apply(lambda x:get_endofmonth_next(x))
+
+df.loc[:,"是否重置累计"] = ""
+df.loc[df['是否更换法人公司'] == "是", "是否重置累计"] = "X"
+df.loc[(df['是否隔月重入职'] == "是")&(df['入职'] == "重新入职"), "是否重置累计"] = "X"
+df.loc[(df['转正原因'].str.contains("实习"))|(df['特殊事件原因'].str.contains("临时"))|(df['特殊事件原因'].str.contains("派遣"))|(df['特殊事件原因'].str.contains("实习"))|(df['特殊事件原因'].str.contains("改签")),"是否重置累计"] = "X"
+
+df.loc[:,"开始日期"] = df['年'].astype('str') + "-" + df['月'].astype('str') + "-" + str(1)
+df.loc[:,"开始日期"] = df['开始日期'].apply(lambda x:datetime.datetime.strptime(x,"%Y-%m-%d").strftime("%Y%m%d"))
+df.loc[df['入职'] == "新员工入职", "开始日期"] = df.loc[df['入职'] == "新员工入职", "入职日期.1"].apply(lambda x:x.strftime("%Y%m%d"))
+
+df.loc[:,'判定日期'] = ""
+df.loc[(df['入职'] != "无")|(df['是否更换法人公司'] == "是")|((df['是否隔月重入职'] == "是")&(df['入职'] != "无"))|(df['是否重置累计'] == 'X'), "判定日期"] = df.loc[(df['入职'] != "无")|(df['是否更换法人公司'] == "是")|(df['是否隔月重入职'] == "是")|(df['是否重置累计'] == 'X'), "开始日期"]
+df.loc[df['最近一次税收录入日期'].notnull(), "判定日期"] = df.loc[df['最近一次税收录入日期'].notnull(), "最近一次税收录入日期"].apply(lambda x:x.strftime("%Y%m%d"))
+
+df.loc[:,"税收录入日期"] = ""
+df.loc[df['是否重置累计'] == "X", "税收录入日期"] = df.loc[df['是否重置累计'] == "X", "判定日期"]
+df.loc[df['是否更换法人公司'] == "是", "税收录入日期"] = df.loc[df['是否更换法人公司'] == "是", "判定日期"]
+df.loc[(df['是否隔月重入职'] == "是")&(df['入职']!="无"), "税收录入日期"] = df.loc[(df['是否隔月重入职']=="是")&(df['入职']!="无"), "开始日期"]
+df.loc[df['最近一次税收录入日期'].notnull(), "税收录入日期"] = df.loc[df['最近一次税收录入日期'].notnull(), "最近一次税收录入日期"].apply(lambda x:x.strftime("%Y%m%d"))
+df.loc[df['入职'] != "无", "税收录入日期"] = df.loc[df['入职'] == "新员工入职", "开始日期"]
+
+df.loc[:,'税收类型'] = "0"
+df.loc[(df['员工组'].str.contains("临时员工"))|(df['员工组'].str.contains("实习生")), '税收类型'] = "4"
+df.loc[df['员工组'].str.contains("外籍"), "税收类型"] = "2"
+
+df_tax = DataFrame(df[df['有无事件']=="有"], columns=["SAP人员编号", "开始日期", "结束日期", "征税地区", "税组", "税收类型", "税收录入日期", "纳税终止日期", "是否免税", "是否重置累计"])
 if len(df_tax)>=1:
-	df_tax.loc[:,'税组'] = df_tax.loc[:,'征税地区'] + "01"
-	df_tax.loc[:,'税收类型'] = "0"
-	df_tax.loc[(df_tax['员工组'].str.contains("临时员工"))|(df_tax['员工组'].str.contains("实习")),"税收类型"] = "4"
-	df_tax.loc[df_tax['员工组'].str.contains("外籍"),"税收类型"] = "2"
-
-	df_tax['纳税终止日期'] = ""
-	df_tax.loc[df_tax['离职'] != "无","纳税终止日期"] = (datetime.datetime(now.year,now.month+1,1) - datetime.timedelta(1,0,0,0)).strftime("%Y%m%d")
-	df_tax['是否免税'] = ""
-
-#判定两日期是否隔月的自定义函数
-	def gap(x,y):
-		x = x + relativedelta(months=1)
-		#1号离职(1表示隔月,0表示不隔夜)
-		if x.day == 1:
-			if (datetime.datetime(x.year, x.month, 1) <= datetime.datetime(y.year, y.month, 1)):
-				return 1
-			else:
-				return 0
-		else:
-			if (datetime.datetime(x.year, x.month, 1) < datetime.datetime(y.year, y.month, 1)):
-				return 1
-			else:
-				return 0
-
-	for i in df_tax.index:
-		if (pd.isna(df_tax.loc[i,'上次入职日期']))&(pd.isna(df_tax.loc[i,'最近一次税收录入日期'])):
-			df_tax.loc[i,'判定日期'] = ""
-		elif (pd.isna(df_tax.loc[i,'上次入职日期']))&(pd.notna(df_tax.loc[i,'最近一次税收录入日期'])):
-			df_tax.loc[i,'判定日期'] = df_tax.loc[i,'最近一次税收录入日期'].strftime("%Y%m01")
-		elif (pd.notna(df_tax.loc[i,'上次入职日期']))&(pd.isna(df_tax.loc[i,'最近一次税收录入日期'])):
-			df_tax.loc[i,'判定日期'] = df_tax.loc[i,'上次入职日期'].strftime("%Y%m01")
-		elif (df_tax.loc[i,'最近一次税收录入日期'] > df_tax.loc[i,'上次入职日期']):
-			df_tax.loc[i,'判定日期'] = df_tax.loc[i,'最近一次税收录入日期'].strftime("%Y%m01")
-		else:
-			df_tax.loc[i,'判定日期'] = df_tax.loc[i,'上次入职日期'].strftime("%Y%m01")
-
-
-	for i in range(len(df_tax)):
-		if (pd.notna(df_tax.loc[i,'特殊事件原因']))&((df_tax.loc[i,'特殊事件原因']=="合同改签")|(df_tax.loc[i,'特殊事件原因']=="实习生转正式员工")|(df_tax.loc[i,'特殊事件原因']=="临时员工转正式员工")):
-			df_tax.loc[i,'是否重置累计'] = "X"
-		elif pd.isna(df_tax.loc[i,'上一次离职日期']):
-			df_tax.loc[i,'是否重置累计'] = ""
-		elif (df_tax.loc[i,"入职"] == "重新入职")&(gap(df_tax.loc[i,'上一次离职日期'], df_tax.loc[i,'入职日期'])==1):
-			df_tax.loc[i,'是否重置累计'] = "X"
-		else:
-			df_tax.loc[i,'是否重置累计'] = ""
-
-	df_tax.loc[:,'人事范围描述.1'].fillna("无",inplace=True)
-
-	for i in df_tax.index:
-		if df_tax.loc[i,'是否重置累计'] == "X":
-			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'开始日期']
-		elif (pd.notna(df_tax.loc[i,'调动']))&(df_tax.loc[i,'人事范围描述'][:2] != df_tax.loc[i,'人事范围描述.1'][:2]):
-			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'调动日期'].strftime("%Y%m01")
-		elif (df_tax.loc[i,'入职']=="新员工入职")|(df_tax.loc[i,'入职']=="重新入职"):
-			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'开始日期']
-		elif pd.isna(df_tax.loc[i,'上一次离职日期']):
-			df_tax.loc[i,'税收录入日期'] = ""
-		elif (df_tax.loc[i,'入职'] == "重新入职")&(gap(df_tax.loc[i,'上一次离职日期'], df_tax.loc[i,'入职日期'])==1):
-			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'判定日期']
-		elif (pd.notna(df_tax.loc[i,'最近一次税收录入日期']))&(pd.notna(df_tax.loc[i,'离职'])):
-			df_tax.loc[i,'税收录入日期'] = df_tax.loc[i,'最近一次税收录入日期'].strftime("%Y%m01")
-		else:
-			df_tax.loc[i,'税收录入日期'] = ""
-
-	col_tax = ['SAP人员编号','开始日期','结束日期', '征税地区','税组','税收类型','税收录入日期','纳税终止日期','是否免税','是否重置累计']
-	df_tax = DataFrame(df_tax, columns=col_tax)
 	output(df_tax,"7-个税")
 	print('''Project:    MB_HR_PERSON
 Subproject: 0531
@@ -283,4 +269,5 @@ Object:     0531_01
 else:
 	print("无需导出个税信息!")
 
+print("模板表已制作完成,请导入SAP系统!")
 input()
