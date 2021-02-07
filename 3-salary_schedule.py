@@ -17,8 +17,10 @@ path_mid = 'D:\\根目录\\项目\\中间表格\\'
 path_text = desk + "\\1-text\\"
 path_char = desk + "\\2-split\\"
 
-month = (datetime.datetime.now()).month-1
+month = (datetime.datetime.now()-datetime.timedelta(datetime.datetime.now().day+1)).month
 path_date = path + str(month) + '月开始日期整理表.xlsx'
+
+date_string = datetime.datetime((datetime.datetime.now() - datetime.timedelta(20,0,0,0)).year,(datetime.datetime.now() - datetime.timedelta(20,0,0,0)).month,1).strftime("%Y%m%d")
 
 df_date = pd.read_excel(path_date)
 
@@ -38,7 +40,7 @@ dir_or = {"附加医疗缴纳金额个人":"0917","附加医疗缴纳金额公�
 		  "产假补款":"2103","税前其他补款":"2108","住房补贴":"2111","社保个人补款":"2112","公积金个人补款":"2113",
 		  "补偿金":"2201","税后其他补款":"2203","补扣社保":"2204","补扣公积金":"2205","税前其他扣款":"2301",
 		  "考勤扣款":"2302","病假扣款":"2303","住宿扣款":"2401","财务扣款":"2402","失货扣款":"2403",
-		  "工会会费":"2404","税后其他扣款":"2405","住宿水电费及饮用水扣款":"2410","住宿费扣款-总部六灶住宿及水电费":"2411",
+		  "税后其他扣款":"2405","住宿水电费及饮用水扣款":"2410","住宿费扣款-总部六灶住宿及水电费":"2411",
 		  "住宿费扣款-总部六灶饮用水费":"2412","住宿费扣款(梅花苑)":"2413","子女教育":"/4J1",
 		  "住房贷款":"/4J4","住房租金":"/4J5","赡养老人":"/4J6","继续教育":"/4J2","业绩奖金(不计年终奖)":"1323",
 		  "业绩奖金(计年终奖)":"1324","提成":"1324","失货":"2403","劳务税":"2405"}
@@ -51,7 +53,8 @@ dir_jc = {"养老缴纳金额个人":"901","养老缴纳金额公司":"902","医
 		  "公积金缴纳金额公司":"973","当地最低工资标准":"1006","驻外津贴":"1201",
 		  "饭贴":"1202","大店津贴":"1212","职级津贴":"1214","岗位津贴":"1215",
 		  "年终奖基数":"1312","服装费":"1318","奖金标准":"1329","工会会费":"2404",
-		  "政策性个人免税标准":"2800","税基调整项":"2901"}
+		  "政策性个人免税标准":"2800","税基调整项":"2901"#,"岗位津贴标准":"1215"
+}
 df_jc = DataFrame(Series(dir_jc),columns=['工资项'])
 
 dir_kq = {"当月计薪天数":"3102","应出勤天数":"3101","实际出勤天数":"3104","病假天数":"3203",
@@ -99,6 +102,12 @@ def opt(df, name, form='.xls'):
 #考勤
 if os.path.exists(path_mid + '考勤.xlsx'):
 	df_atd = pd.read_excel(path_mid + '考勤.xlsx')
+	try:
+		df_atd_qqj = DataFrame(df_atd[(df_atd['全勤奖'].notnull())&(df_atd['全勤奖']!=0)], columns=['SAP编号', '姓名', '全勤奖'])
+		df_atd_qqj = df_atd_qqj.melt(id_vars=['SAP编号','姓名'], var_name="属性", value_name="金额")
+	except KeyError:
+		df_atd_qqj = DataFrame()
+	
 	df_atd = df_atd.melt(id_vars=['SAP编号','姓名'], var_name="属性", value_name="时数")
 	df_atd = pd.merge(df_atd, df_kq, left_on='属性', right_index=True, how='left')
 	df_atd = pd.merge(df_atd, df_date, left_on='SAP编号', right_on='SAP人员编号', how='left')
@@ -108,15 +117,16 @@ if os.path.exists(path_mid + '考勤.xlsx'):
 	opt(df_attendance,"考勤")
 else:
 	print("未发现考勤数据!")
+	df_atd_qqj = DataFrame()
 
 
 #津贴明细
 if os.path.exists(path_mid + '津贴明细.xlsx'):
 	df_jt = pd.read_excel(path_mid + '津贴明细.xlsx')
-	df_jt.rename(columns={'工资项':'属性'},inplace=True)
+	df_jt = df_jt.rename(columns={'工资项':'属性'})
 	df_jt.loc[:,'金额'] = df_jt.loc[:,'金额'].apply(lambda x:round(x,2))
 	df_jt = pd.pivot_table(df_jt,index=['SAP编号','姓名','属性'], values=['金额'],aggfunc='sum').reset_index()
-	df_jt.loc[df_jt['属性'].str.contains("扣"),"金额"] = df_jt.loc[df_jt['属性'].str.contains("扣"),"金额"].apply(lambda x:-abs(x))
+	df_jt.loc[df_jt.loc[:,'属性'].str.contains("扣"),"金额"] = df_jt.loc[df_jt.loc[:,'属性'].str.contains("扣"),"金额"].apply(lambda x:-abs(x))
 else:
 	df_jt = DataFrame()
 
@@ -126,12 +136,12 @@ if os.path.exists(path_mid + '社保.xlsx'):
 	df_ss = pd.read_excel(path_mid + '社保.xlsx')
 	df_ss = pd.merge(df_ss,df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
 	
-	df_kg = DataFrame(df_ss[(df_ss['社保账户']!=0)|(df_ss['公积金账户']!=0)],columns=['SAP编号','姓名'])
-	df_kg['0001'] = 'ZM'
-	df_kg['0002'] = 'ZM'
-	df_kg['0003'] = 'ZM'
-	df_kg['0004'] = 'ZM'
-	df_kg['0005'] = 'ZM'
+	df_kg = DataFrame(df_ss[(df_ss.loc[:,'社保账户']!=0)|(df_ss.loc[:,'公积金账户']!=0)],columns=['SAP编号','姓名'])
+	df_kg.loc[:,'0001'] = 'ZM'
+	df_kg.loc[:,'0002'] = 'ZM'
+	df_kg.loc[:,'0003'] = 'ZM'
+	df_kg.loc[:,'0004'] = 'ZM'
+	df_kg.loc[:,'0005'] = 'ZM'
 	df_kg = df_kg.melt(id_vars=['SAP编号','姓名'],var_name="子信息类型",value_name='分摊范围')
 	df_kg = pd.merge(df_kg, df_ss, on=['SAP编号','姓名'],how='left')
 	
@@ -156,20 +166,25 @@ if os.path.exists(path_mid + '社保.xlsx'):
 	df_kg.loc[:,'分摊组'] = "ZM01"
 	
 	df_kg_end = DataFrame(df_kg,columns=['SAP编号', '子信息类型','开始日期','分摊更改原因代码','保险单编号','分摊范围','行业','分摊组','分摊标准','雇主和雇员支付的分摊','仅雇主的分摊支付','无分摊','系统'])
+	df_kg_end.loc[df_kg_end['开始日期'] != date_string, "开始日期"] = date_string
 	opt(df_kg_end, "社保分摊", '.txt')
 	
 	
-	df_kg_gjj = DataFrame(df_ss[df_ss['公积金账户'] != 0])
-	df_kg_gjj.loc[:,'地区'] = "ZM"
-	df_kg_gjj.loc[:,'组'] = "ZM01"
-	df_kg_gjj.loc[:,'级别'] = "01"
+	df_kg_gjj = DataFrame(df_ss[df_ss.loc[:,'公积金账户'] != 0])
+	if len(df_kg_gjj)>=1:
+		df_kg_gjj.loc[:,'地区'] = "ZM"
+		df_kg_gjj.loc[:,'组'] = "ZM01"
+		df_kg_gjj.loc[:,'级别'] = "01"
 
-	df_kg_gjj.loc[:,'雇主和雇员缴纳'] = ""
-	df_kg_gjj.loc[df_kg_gjj.loc[:,'公积金缴纳金额个人'] + df_kg_gjj.loc[:,'公积金缴纳金额公司'] > 0,"雇主和雇员缴纳"] = "X"
-	df_kg_gjj.loc[:,'不缴纳'] = "X"
-	df_kg_gjj.loc[df_kg_gjj.loc[:,'雇主和雇员缴纳'] == "X","不缴纳"] = ""
-	df_kg_gjj_end = DataFrame(df_kg_gjj, columns=['SAP编号','开始日期','住房公积金账号','地区','组','级别','雇主和雇员缴纳','单位缴纳','员工缴纳','不缴纳','系统'])
-	opt(df_kg_gjj_end, "公积金", '.txt')
+		df_kg_gjj.loc[:,'雇主和雇员缴纳'] = ""
+		df_kg_gjj.loc[df_kg_gjj.loc[:,'公积金缴纳金额个人'] + df_kg_gjj.loc[:,'公积金缴纳金额公司'] > 0,"雇主和雇员缴纳"] = "X"
+		df_kg_gjj.loc[:,'不缴纳'] = "X"
+		df_kg_gjj.loc[df_kg_gjj.loc[:,'雇主和雇员缴纳'] == "X","不缴纳"] = ""
+		df_kg_gjj_end = DataFrame(df_kg_gjj, columns=['SAP编号','开始日期','住房公积金账号','地区','组','级别','雇主和雇员缴纳','单位缴纳','员工缴纳','不缴纳','系统'])
+		df_kg_gjj_end.loc[df_kg_gjj_end['开始日期'] != date_string, "开始日期"] = date_string
+		opt(df_kg_gjj_end, "公积金", '.txt')
+	else:
+		print("未发现公积金数据!")
 	
 	
 	df_ss_mid = pd.read_excel(path_mid + '社保.xlsx')
@@ -192,6 +207,7 @@ else:
 if os.path.exists(path_mid + '薪资异动表.xlsx'):
 	df_xz = pd.read_excel(path_mid + '薪资异动表.xlsx')
 	df_xz.loc[:,'更改原因'] = '50'
+	
 	df_xz.loc[:,'工资等级类型'] = "01"
 	df_xz.loc[:,'级别'] = '0001'
 	df_xz.loc[:,'档次'] = 'A0'
@@ -201,13 +217,22 @@ if os.path.exists(path_mid + '薪资异动表.xlsx'):
 	df_xz.loc[:,'职级工资金额'] = df_xz.loc[:,'薪资'] - df_xz.loc[:,'当地最低工资标准']
 	df_xz.loc[:,'固定工资标准工资项'] = 1003
 	df_xz.loc[:,'固定工资'] = df_xz.loc[:,'薪资']
+	df_xz.loc[:,'岗位津贴代码'] = 1007
+	df_xz.loc[:,'岗位津贴金额'] = df_xz.loc[:,'岗位津贴标准']
+	df_xz.loc[(df_xz['岗位津贴标准'].isnull())or(df_xz['岗位津贴标准']==0), '岗位津贴金额'] = ""
+	df_xz.loc[df_xz['岗位津贴金额']=="", "岗位津贴代码"] = ""
+	 
 	df_xz = pd.merge(df_xz, df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
 	df_xz_end = DataFrame(df_xz[df_xz['薪资']>0],columns = ['SAP编号','姓名','开始日期','结束日期','更改原因','工资等级类型','范围','级别','档次','基本工资工资项',\
-						  '基本工资金额','职级工资工资项','职级工资金额','固定工资标准工资项','固定工资','小时工工资项目','系统'])
+						  '基本工资金额','职级工资工资项','职级工资金额','固定工资标准工资项','固定工资','小时工工资项目','小时工工资金额', '岗位津贴代码', '岗位津贴金额','系统'])
+	#df_xz_end = DataFrame(df_xz[df_xz['薪资']>0],columns = ['SAP编号','姓名','开始日期','结束日期','更改原因','工资等级类型','范围','级别','档次','基本工资工资项',\
+	#					  '基本工资金额','职级工资工资项','职级工资金额','固定工资标准工资项','固定工资','小时工工资项目','小时工工资金额','系统'])
+	df_xz_end.loc[(df_xz_end['岗位津贴金额'].notnull())&(df_xz_end['开始日期']=="20210101"), "更改原因"] = "99"
+	df_xz_end.loc[(df_xz_end['岗位津贴金额'].notnull())&(df_xz_end['开始日期']==20210101), "更改原因"] = "99"
 	opt(df_xz_end,"薪资",'.xls')
 	
 	
-	df_xz_dj = DataFrame(df_xz[df_xz['薪资']==0],columns=['SAP人员编号','开始日期','系统'])
+	df_xz_dj = DataFrame(df_xz[df_xz['薪资']==0],columns=['SAP编号','开始日期','系统'])
 	opt(df_xz_dj,"薪资定界",'.txt')
 	
 	
@@ -227,15 +252,19 @@ else:
 
 #小时工
 if os.path.exists(path_mid + '小时工.xlsx'):
-	df_sl = DataFrame(pd.read_excel(path_mid + '小时工.xlsx'),columns=['SAP编号','姓名','小时数','时薪','天数','日薪','提成','失货','劳务税'])
+	df_sl = DataFrame(pd.read_excel(path_mid + '小时工.xlsx'),columns=['SAP编号','姓名','小时数','时薪','天数','日薪','考勤扣款','提成','失货','劳务税'])
 	
 	df_sl.fillna(0,inplace=True)
 	df_sl.loc[:,'小时工工资'] = df_sl.loc[:,'小时数'] * df_sl.loc[:,'时薪'] + df_sl.loc[:,'天数'] * df_sl.loc[:,'日薪']
-	df_sl = DataFrame(df_sl, columns=['SAP编号','姓名','小时工工资','提成','失货','劳务税'])
-	df_sl = pd.pivot_table(df_sl, index=['SAP编号'], values=['小时工工资','提成','失货','劳务税'], aggfunc='sum').reset_index()
+	df_sl.loc[:,'考勤'] = df_sl.loc[:,'考勤扣款'].apply(lambda x: -abs(x))
+	
+	df_sl = DataFrame(df_sl, columns=['SAP编号','姓名','小时工工资','提成','失货','劳务税','考勤'])
+	df_sl = pd.pivot_table(df_sl, index=['SAP编号'], values=['小时工工资','提成','失货','劳务税','考勤'], aggfunc='sum').reset_index()
 
 	df_sl_end = df_sl.melt(id_vars=['SAP编号'], var_name="属性", value_name='金额')
 	df_sl_end = DataFrame(df_sl_end, columns=['SAP编号','姓名','属性','金额'])
+	df_sl_end['属性'].replace("失货", "失货扣款",inplace=True)
+	df_sl_end['属性'].replace("考勤", "考勤扣款",inplace=True)
 else:
 	df_sl_end = DataFrame()
 
@@ -271,9 +300,10 @@ else:
 
 
 #偶然性整合
-df_orx = pd.concat([df_jt,df_ss_mid,df_fj,df_sl_end],axis=0)
+df_orx = pd.concat([df_atd_qqj,df_jt,df_ss_mid,df_fj,df_sl_end],axis=0)
 if len(df_orx) >= 1:
 	df_orx = pd.merge(df_orx, df_date, left_on='SAP编号',right_on='SAP人员编号',how='left')
+	df_orx.loc[df_orx['属性'].str.contains("扣"),"金额"] = df_orx.loc[df_orx['属性'].str.contains("扣"),"金额"].apply(lambda x:-abs(x))
 	df_orx = pd.merge(df_orx, df_or, left_on='属性', right_index=True,how='left')
 	df_orx = df_orx[df_orx['工资项'].notnull()]
 	df_orx.loc[:,'工资项'] = df_orx.loc[:,'工资项'].astype('str')

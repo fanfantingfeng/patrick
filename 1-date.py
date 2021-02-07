@@ -48,7 +48,7 @@ dir_hrlim = {"人事范围":"范围","总部总直总监级以上":"SH","总部M
 
 
 root = 'D:\\根目录\\人事异动\\'
-month = datetime.datetime.now().month-1
+month = (datetime.datetime.now()-datetime.timedelta(datetime.datetime.now().day+1)).month
 file800 = root + str(month) + "月人事异动表-800.xlsx"
 file830 = root + str(month) + "月人事异动表-830.xlsx"
 
@@ -67,10 +67,11 @@ df = df.reset_index()
 def stan(data):
 	for i in range(len(data.index)):
 		data.loc[i,'月初日期'] = datetime.datetime(int(data.loc[i,'年']),int(data.loc[i,'月']),1)
-		data.loc[i,'月末日期'] = datetime.datetime(int(data.loc[i,'年']),int(data.loc[i,'月'])+1,1) - datetime.timedelta(1,0,0,0)
+		data.loc[i,'月末日期'] = datetime.datetime((datetime.datetime(int(data.loc[i,'年']),int(data.loc[i,'月']),15)+datetime.timedelta(20,0,0,0)).year,
+			(datetime.datetime(int(data.loc[i,'年']),int(data.loc[i,'月']),15)+datetime.timedelta(20,0,0,0)).month, 1)- datetime.timedelta(1,0,0,0)
 		data.loc[i,'初始日期'] = data.loc[i,'月末日期'].strftime("%Y%m%d")
 		if data.loc[i,'入职'] == '新员工入职':
-			data.loc[i,'开始日期'] = data.loc[i,'入职日期'].strftime("%Y%m%d")
+			data.loc[i,'开始日期'] = pd.to_datetime(data.loc[i,'入职日期']).strftime("%Y%m%d")
 		else:
 			data.loc[i,'开始日期'] = data.loc[i,'月初日期'].strftime("%Y%m%d")
 	data.loc[:,'结束日期'] = "99991231"

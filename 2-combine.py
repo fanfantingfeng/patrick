@@ -5,6 +5,7 @@ from pandas import DataFrame
 import numpy as np
 import os
 import xlrd
+import datetime
 
 print("欢迎使用合并表格模板\n一切解释权均归开发者所有!\n开发者: 凡凡\n")
 
@@ -55,30 +56,28 @@ else:
 
 #自定义函数
 def space(data):
-	for i in range(1,30):
-		text = " " * i
-		data = data.replace(text, 0)
-	return data.fillna(0, inplace=True)
+	data = data.applymap(lambda x:str(x).replace(" ",""))	
+	return data
 
 
 def output(data,text):
 	data = data.dropna(axis=0,how='all')
 	data = data.dropna(axis=1,how='all')
 	data = data.drop_duplicates()
-	space(data)
 	if len(data) >= 1:
 		df = DataFrame(data[data.loc[:,'SAP编号'].notnull()])
 		try:
 			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
 		except ValueError:
 			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('str')
-		if len(df.index) >= 1:
+		if len(df) >= 1:
 			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('str')
 			df = df[(df.loc[:,'SAP编号'].notnull())&(df.loc[:,'SAP编号'].str.isnumeric())]
 			df = df.fillna(0)
 			df.loc[:,'SAP编号'] = df.loc[:,'SAP编号'].astype('int')
 			filename = path_mid + "\\" + text + '.xlsx'
-			if len(df.index) >= 1:
+			if len(df) >= 1:
+				#df = space(df)
 				df.to_excel(filename, index=False)
 				print(text + "表已生成,容量为: " + str(len(df)))
 			else:
@@ -127,9 +126,9 @@ if len(filename) >= 1:
 			if "社保统计" in j:
 				ss = ss.append(pd.read_excel(files,sheet_name="社保统计",header=3),ignore_index=True)
 			if "税务系统" in j:
-				sw = sw.append(pd.read_excel(files,sheet_name="专项附加扣除-税务系统"),ignore_index=True)
+				sw = sw.append(pd.read_excel(files,sheet_name="专项附加扣除-税务系统",dtype={'SAP编号':'str'}),ignore_index=True)
 			if "薪资数据集" in j:
-				sap = sap.append(pd.read_excel(files,sheet_name="薪资数据集-Sap"),ignore_index=True)
+				sap = sap.append(pd.read_excel(files,sheet_name="薪资数据集-Sap",dtype={'SAP编号':'str'}),ignore_index=True)
 			if "薪资异动表" in j:
 				xz = xz.append(pd.read_excel(files,sheet_name="薪资异动表"),ignore_index=True)
 			if "津贴异动表" in j:
@@ -154,13 +153,14 @@ output(jt,"津贴明细")
 
 #社保
 ss = DataFrame(ss, columns=col_ss)
+ss.fillna(0,inplace=True)
 output(ss,"社保")
 
 #附加专项
 stan(sw)
 stan(sap)
-if (len(sw.index) >= 1)&(len(sap.index) >= 1):
-	fj = pd.merge(sw,sap,on='SAP编号',how='outer')
+if (len(sw) >= 1)&(len(sap) >= 1):
+	fj = pd.merge(sw,sap,on='SAP编号',how='left')
 	fj.loc[:,'子女教育'] = fj.loc[:,'累计子女教育_x'] - fj.loc[:,'累计子女教育_y']
 	fj.loc[:,'住房租金'] = fj.loc[:,'累计住房租金_x'] - fj.loc[:,'累计住房租金_y']
 	fj.loc[:,'住房贷款'] = fj.loc[:,'累计住房贷款_x'] - fj.loc[:,'累计住房贷款_y']
@@ -168,12 +168,21 @@ if (len(sw.index) >= 1)&(len(sap.index) >= 1):
 	fj.loc[:,'继续教育'] = fj.loc[:,'累计继续教育_x'] - fj.loc[:,'累计继续教育_y']
 	fj = DataFrame(fj,columns=['SAP编号','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
 	output(fj,"附加专项")
+elif (len(sw) >= 1)&(len(sap) == 0)&(datetime.datetime.now().month == 1):
+	fj = sw
+	fj.loc[:,'子女教育'] = fj.loc[:,'累计子女教育']
+	fj.loc[:,'住房租金'] = fj.loc[:,'累计住房租金']
+	fj.loc[:,'住房贷款'] = fj.loc[:,'累计住房贷款']
+	fj.loc[:,'赡养老人'] = fj.loc[:,'累计赡养老人']
+	fj.loc[:,'继续教育'] = fj.loc[:,'累计继续教育']
+	fj = DataFrame(fj,columns=['SAP编号','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
+	output(fj, "附加专项")
 else:
 	print("未发现完整的附加专项相关数据!")
 
 #薪资异动表
 if len(xz) >= 1:
-	xz = DataFrame(xz,columns=['SAP编号','姓名','当地最低工资标准','薪资'])
+	xz = DataFrame(xz,columns=['SAP编号','姓名','当地最低工资标准','薪资','岗位津贴标准'])
 	output(xz,"薪资异动表")
 else:
 	print("未发现薪资异动数据!")
@@ -187,10 +196,28 @@ else:
 
 #小时工
 if len(sl) >= 1:
-	sl = DataFrame(sl,columns=['SAP编号','小时数','时薪','天数','日薪','提成','失货','劳务税'])
-	output(stan(sl),"小时工")
+	sl = DataFrame(sl[sl['SAP编号'].notnull()],columns=['SAP编号','小时数','时薪','天数','日薪','考勤扣款','提成','失货','劳务税'])
+	sl.loc[:,'SAP编号'] = sl.loc[:,'SAP编号'].astype('int')
+	sl = sl.dropna(axis=0, how='all')
+	sl = sl.dropna(axis=1, how='all')
+	if len(sl) >= 1:
+		sl = DataFrame(sl[sl.loc[:,'SAP编号'].notnull()])
+		try:
+			sl.loc[:,'SAP编号'] = sl.loc[:,'SAP编号'].astype('int')
+		except ValueError:
+			sl.loc[:,'SAP编号'] = sl.loc[:,'SAP编号'].astype('str')
+		if len(sl) >= 1:
+			sl.loc[:,'SAP编号'] = sl.loc[:,'SAP编号'].astype('str')
+			sl = sl[(sl.loc[:,'SAP编号'].notnull())&(sl.loc[:,'SAP编号'].str.isnumeric())]
+			sl = sl.fillna(0)
+			sl.loc[:,'SAP编号'] = sl.loc[:,'SAP编号'].astype('int')
+		sl.to_excel(path_mid + "\\小时工.xlsx", index=False)
+		print("小时工数据已生成, 容量为 " + str(len(sl)))
+	else:
+		print("未发现小时工数据")
 else:
 	print("未发现小时工数据!")
+
 
 #银行明细
 if len(bk) >= 1:
