@@ -4,7 +4,7 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 import os
-import xlrd
+import openpyxl
 import datetime
 
 print("欢迎使用合并表格模板\n一切解释权均归开发者所有!\n开发者: 凡凡\n")
@@ -116,27 +116,27 @@ bk = DataFrame()
 if len(filename) >= 1:	
 	for i in filename:
 		files = path + "\\" + i
-		wb = xlrd.open_workbook(files)
-		names = wb.sheet_names()
+		wb = openpyxl.load_workbook(files)
+		names = wb.sheetnames
 		for j in names:
 			if "考勤统计" in j:
-				kq = kq.append(pd.read_excel(files,sheet_name="考勤统计",header=1),ignore_index=True)
+				kq = kq.append(pd.read_excel(files,sheet_name="考勤统计",header=1, engine='openpyxl'),ignore_index=True)
 			if "津贴明细" in j:
-				jt = jt.append(pd.read_excel(files,sheet_name="津贴明细"),ignore_index=True)
+				jt = jt.append(pd.read_excel(files,sheet_name="津贴明细", engine='openpyxl'),ignore_index=True)
 			if "社保统计" in j:
-				ss = ss.append(pd.read_excel(files,sheet_name="社保统计",header=3),ignore_index=True)
+				ss = ss.append(pd.read_excel(files,sheet_name="社保统计",header=3, engine='openpyxl'),ignore_index=True)
 			if "税务系统" in j:
-				sw = sw.append(pd.read_excel(files,sheet_name="专项附加扣除-税务系统",dtype={'SAP编号':'str'}),ignore_index=True)
+				sw = sw.append(pd.read_excel(files,sheet_name="专项附加扣除-税务系统",dtype={'SAP编号':'str'}, engine='openpyxl'),ignore_index=True)
 			if "薪资数据集" in j:
-				sap = sap.append(pd.read_excel(files,sheet_name="薪资数据集-Sap",dtype={'SAP编号':'str'}),ignore_index=True)
+				sap = sap.append(pd.read_excel(files,sheet_name="薪资数据集-Sap",dtype={'SAP编号':'str'}, engine='openpyxl'),ignore_index=True)
 			if "薪资异动表" in j:
-				xz = xz.append(pd.read_excel(files,sheet_name="薪资异动表"),ignore_index=True)
+				xz = xz.append(pd.read_excel(files,sheet_name="薪资异动表", engine='openpyxl'),ignore_index=True)
 			if "津贴异动表" in j:
-				jt1 = jt1.append(pd.read_excel(files,sheet_name="津贴异动表"),ignore_index=True)
+				jt1 = jt1.append(pd.read_excel(files,sheet_name="津贴异动表", engine='openpyxl'),ignore_index=True)
 			if "小时工" in j:
-				sl = sl.append(pd.read_excel(files,sheet_name="小时工"),ignore_index=True)
+				sl = sl.append(pd.read_excel(files,sheet_name="小时工", engine='openpyxl'),ignore_index=True)
 			if "银行" in j:
-				bk = bk.append(pd.read_excel(files,sheet_name="银行明细",dtype={'银行代码':'str','银行账号':'str'}),ignore_index=True)
+				bk = bk.append(pd.read_excel(files,sheet_name="银行明细",dtype={'银行代码':'str','银行账号':'str'}, engine='openpyxl'),ignore_index=True)
 else:
 	print("文件夹为空, 请核实, 谢谢!")
 

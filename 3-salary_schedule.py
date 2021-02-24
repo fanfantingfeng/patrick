@@ -5,7 +5,7 @@ from pandas import DataFrame,Series
 import numpy as np
 import datetime
 import os
-import xlrd
+import openpyxl
 
 print("欢迎使用合并表格模板\n一切解释权均归开发者所有!\n开发者: 凡凡\n")
 
@@ -22,7 +22,7 @@ path_date = path + str(month) + '月开始日期整理表.xlsx'
 
 date_string = datetime.datetime((datetime.datetime.now() - datetime.timedelta(20,0,0,0)).year,(datetime.datetime.now() - datetime.timedelta(20,0,0,0)).month,1).strftime("%Y%m%d")
 
-df_date = pd.read_excel(path_date)
+df_date = pd.read_excel(path_date, engine='openpyxl')
 
 
 #工资项参数
@@ -101,7 +101,7 @@ def opt(df, name, form='.xls'):
 
 #考勤
 if os.path.exists(path_mid + '考勤.xlsx'):
-	df_atd = pd.read_excel(path_mid + '考勤.xlsx')
+	df_atd = pd.read_excel(path_mid + '考勤.xlsx', engine='openpyxl')
 	try:
 		df_atd_qqj = DataFrame(df_atd[(df_atd['全勤奖'].notnull())&(df_atd['全勤奖']!=0)], columns=['SAP编号', '姓名', '全勤奖'])
 		df_atd_qqj = df_atd_qqj.melt(id_vars=['SAP编号','姓名'], var_name="属性", value_name="金额")
@@ -122,7 +122,7 @@ else:
 
 #津贴明细
 if os.path.exists(path_mid + '津贴明细.xlsx'):
-	df_jt = pd.read_excel(path_mid + '津贴明细.xlsx')
+	df_jt = pd.read_excel(path_mid + '津贴明细.xlsx', engine='openpyxl')
 	df_jt = df_jt.rename(columns={'工资项':'属性'})
 	df_jt.loc[:,'金额'] = df_jt.loc[:,'金额'].apply(lambda x:round(x,2))
 	df_jt = pd.pivot_table(df_jt,index=['SAP编号','姓名','属性'], values=['金额'],aggfunc='sum').reset_index()
@@ -133,7 +133,7 @@ else:
 
 #社保
 if os.path.exists(path_mid + '社保.xlsx'):
-	df_ss = pd.read_excel(path_mid + '社保.xlsx')
+	df_ss = pd.read_excel(path_mid + '社保.xlsx', engine='openpyxl')
 	df_ss = pd.merge(df_ss,df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
 	
 	df_kg = DataFrame(df_ss[(df_ss.loc[:,'社保账户']!=0)|(df_ss.loc[:,'公积金账户']!=0)],columns=['SAP编号','姓名'])
@@ -187,7 +187,7 @@ if os.path.exists(path_mid + '社保.xlsx'):
 		print("未发现公积金数据!")
 	
 	
-	df_ss_mid = pd.read_excel(path_mid + '社保.xlsx')
+	df_ss_mid = pd.read_excel(path_mid + '社保.xlsx', engine='openpyxl')
 	del df_ss_mid['社保账户']
 	del df_ss_mid['公积金账户']
 	df_ss_mid = df_ss_mid.melt(id_vars=['SAP编号','姓名'],var_name='属性',value_name='金额')
@@ -197,7 +197,7 @@ else:
 
 #附加专项
 if os.path.exists(path_mid + '附加专项.xlsx'):
-	df_fj = DataFrame(pd.read_excel(path_mid + '附加专项.xlsx'),columns=['SAP编号','姓名','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
+	df_fj = DataFrame(pd.read_excel(path_mid + '附加专项.xlsx', engine='openpyxl'),columns=['SAP编号','姓名','子女教育','住房租金','住房贷款','赡养老人','继续教育'])
 	df_fj = df_fj.melt(id_vars=['SAP编号','姓名'], var_name="属性", value_name="金额")
 else:
 	df_fj = DataFrame()
@@ -205,7 +205,7 @@ else:
 
 #薪资异动表
 if os.path.exists(path_mid + '薪资异动表.xlsx'):
-	df_xz = pd.read_excel(path_mid + '薪资异动表.xlsx')
+	df_xz = pd.read_excel(path_mid + '薪资异动表.xlsx', engine='openpyxl')
 	df_xz.loc[:,'更改原因'] = '50'
 	
 	df_xz.loc[:,'工资等级类型'] = "01"
@@ -219,7 +219,7 @@ if os.path.exists(path_mid + '薪资异动表.xlsx'):
 	df_xz.loc[:,'固定工资'] = df_xz.loc[:,'薪资']
 	df_xz.loc[:,'岗位津贴代码'] = 1007
 	df_xz.loc[:,'岗位津贴金额'] = df_xz.loc[:,'岗位津贴标准']
-	df_xz.loc[(df_xz['岗位津贴标准'].isnull())or(df_xz['岗位津贴标准']==0), '岗位津贴金额'] = ""
+	df_xz.loc[df_xz['岗位津贴标准']==0, '岗位津贴金额'] = ""
 	df_xz.loc[df_xz['岗位津贴金额']=="", "岗位津贴代码"] = ""
 	 
 	df_xz = pd.merge(df_xz, df_date,left_on='SAP编号',right_on='SAP人员编号',how='left')
@@ -244,7 +244,7 @@ else:
 
 #津贴异动表
 if os.path.exists(path_mid + '津贴异动表.xlsx'):
-	df_jty = pd.read_excel(path_mid + '津贴异动表.xlsx')
+	df_jty = pd.read_excel(path_mid + '津贴异动表.xlsx', engine='openpyxl')
 	df_jty.rename(columns={'项目':'属性'}, inplace=True)
 else:
 	df_jty = DataFrame()
@@ -252,7 +252,7 @@ else:
 
 #小时工
 if os.path.exists(path_mid + '小时工.xlsx'):
-	df_sl = DataFrame(pd.read_excel(path_mid + '小时工.xlsx'),columns=['SAP编号','姓名','小时数','时薪','天数','日薪','考勤扣款','提成','失货','劳务税'])
+	df_sl = DataFrame(pd.read_excel(path_mid + '小时工.xlsx', engine='openpyxl'),columns=['SAP编号','姓名','小时数','时薪','天数','日薪','考勤扣款','提成','失货','劳务税'])
 	
 	df_sl.fillna(0,inplace=True)
 	df_sl.loc[:,'小时工工资'] = df_sl.loc[:,'小时数'] * df_sl.loc[:,'时薪'] + df_sl.loc[:,'天数'] * df_sl.loc[:,'日薪']
@@ -271,7 +271,7 @@ else:
 
 #银行明细
 if os.path.exists(path_mid + '银行明细.xlsx'):
-	df_bk = DataFrame(pd.read_excel(path_mid + '银行明细.xlsx'))
+	df_bk = DataFrame(pd.read_excel(path_mid + '银行明细.xlsx', engine='openpyxl'))
 	df_bk.loc[:,'主要银行'] = str(0)
 	df_bk = pd.merge(df_bk, df_date, left_on='SAP编号', right_on='SAP人员编号', how='left')
 	df_bk_end = DataFrame(df_bk, columns=['SAP编号','开始日期','结束日期','主要银行','姓名','银行代码','银行账号','系统'])
