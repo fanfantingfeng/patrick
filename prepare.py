@@ -27,16 +27,22 @@ endday = (datetime.datetime(now.year,now.month,1) - datetime.timedelta(1,0,0,0))
 
 
 #数据准备
-data = pd.read_excel(root_file + "\\" + str(last_m.month) + "月人事异动表-800.xlsx")
+data = pd.read_excel(root_file + "\\" + str(last_m.month) + "月人事异动表-800.xlsx",engine='openpyxl')
 data.loc[:,"开始日期"] = startday
 data.loc[data['入职'] == "新员工入职", "开始日期"] = data.loc[data['入职'] == "新员工入职", "入职日期"].apply(lambda x:x.strftime("%Y%m%d"))
 data.loc[:,"结束日期"] = "99991231"
 
 file = 'D:\\根目录\\参数表\\参数表.xlsx'
-city = pd.read_excel(file,sheet_name='人事范围')
-cost_center = pd.read_excel(file,sheet_name='成本中心',dtype={'特殊成本中心':str})
+city = pd.read_excel(file,sheet_name='人事范围',engine='openpyxl')
+cost_center = pd.read_excel(file,sheet_name='成本中心',engine='openpyxl',dtype={'特殊成本中心':str})
 
 data = pd.merge(data, city, left_on="人事范围描述", right_on="人事范围", how="left")
+
+
+#特殊的人员过账成本中心
+dir_special = {4002698:4800200300, 4004623:4800200300}
+df_special = pd.DataFrame(pd.Series(dir_special), columns=['过账成本中心'])
+#df_special['人员编号'] = df_special.index
 
 
 #自定义函数
@@ -145,9 +151,12 @@ else:
 #成本中心
 df_cc = DataFrame(data[(data['员工组'] != "临时员工")&(~data['人事范围描述'].str.contains("总部"))])
 if len(df_cc)>=1:
-	df_cc.loc[:,"有无事件"] = "有"
-	fil = (df_cc['入职'].isnull())&(df_cc['调动'].isnull())&(df_cc['晋级'].isnull())&(df_cc['特殊事件'].isnull())
-	df_cc.loc[fil,"有无事件"] = "无"
+	df_cc.loc[:,"有无事件"] = "无"
+	
+	df_cc.loc[df_cc['入职'].notnull(),"有无事件"] = "有"
+	df_cc.loc[df_cc['调动'].notnull(),"有无事件"] = "有"
+	df_cc.loc[df_cc['晋级'].notnull(),"有无事件"] = "有"
+	df_cc.loc[df_cc['特殊事件'].notnull(),"有无事件"] = "有"
 	df_cc[['总部管理中心/事业部','中心','分中心','部门/零售管理公司','分部门','组/分公司部门','店铺/专柜','组织单元描述']] = df_cc[['总部管理中心/事业部','中心','分中心','部门/零售管理公司','分部门','组/分公司部门','店铺/专柜','组织单元描述']].fillna("无")
 	list3 = [df_cc['中心'],df_cc['分中心'],df_cc['部门/零售管理公司'],df_cc['分部门'],df_cc['组/分公司部门'],df_cc['店铺/专柜'],df_cc['组织单元描述']]
 	df_cc.loc[:,'组织参数'] = df_cc['总部管理中心/事业部'].str.cat(list3)
@@ -176,13 +185,17 @@ if len(df_cc)>=1:
 	df_cc.loc[(df_cc['组织参数'].str.contains('加盟管理'))&(~df_cc['组织参数'].str.contains('店群'))&(~df_cc['组织参数'].str.contains('片区')),'职能'] = '加盟'
 
 	df_cc = pd.merge(df_cc,cost_center,left_on=['分公司','品牌','职能'],right_on=['属性2','品牌','属性'],how='left')
+	df_cc = pd.merge(df_cc, df_special, left_on='SAP人员编号', right_index=True,how='left')
 	df_cc.loc[:,'成本中心'] = "无"
+	
 	df_cc.loc[df_cc['特殊成本中心'].notnull(),'成本中心'] = df_cc.loc[df_cc['特殊成本中心'].notnull(),'特殊成本中心']
 	df_cc.loc[df_cc['组织成本中心'].notnull(),'成本中心'] = df_cc.loc[df_cc['组织成本中心'].notnull(),'组织成本中心']
+	df_cc.loc[df_cc['过账成本中心'].notnull(),'成本中心'] = df_cc.loc[df_cc['过账成本中心'].notnull(),'过账成本中心']
 	df_cc.loc[df_cc['成本中心']!='无', "成本中心"] = df_cc.loc[df_cc['成本中心']!='无', "成本中心"].apply(lambda x:int(x))
 	df_cc.loc[:,'是否调整成本中心'] = "否"
 	df_cc.loc[df_cc['人员成本中心'] != df_cc['成本中心'], "是否调整成本中心"] = "是"
-	df_cc = DataFrame(df_cc[(df_cc['有无事件'] == "有")])
+	df_cc.loc[df_cc['有无事件'] == '有', "是否调整成本中心"] = "是"
+	df_cc = DataFrame(df_cc[(df_cc['是否调整成本中心'] == "是")])
 
 	df_cc.loc[:,'订单_1'] = ""
 	df_cc.loc[df_cc['人事范围描述'].str.contains("MB"), '订单_1'] = "10"
@@ -197,6 +210,7 @@ if len(df_cc)>=1:
 	df_cc.loc[df_cc['店铺职级'].isnull(),"订单编号"] = ""
 	df_cc.loc[df_cc['店铺职级'].notnull(),"订单编号"] = df_cc['订单_1'].str.cat([df_cc['公司代码'], df_cc['订单_3']])
 	df_cc.loc[:,'分配'] = "01"
+	
 
 	df_cc = DataFrame(df_cc[df_cc['成本中心']!="无"],columns=['SAP人员编号','开始日期','结束日期','分配','公司代码','成本中心','订单编号'])
 	output(df_cc, "6-成本中心")
@@ -218,6 +232,7 @@ df.loc[:, column_incident] = df.loc[:, column_incident].fillna("无")
 df.loc[:,"有无事件"] = "有"
 df.loc[(df['入职'] == "无")&(df['转正'] == "无")&(df['调动'] == "无")&(df['晋级'] == "无")&(df['离职'] == "无")&(df['特殊事件'] == "无"),"有无事件"] = "无"
 df.loc[(df['调动原因']=="公司内调动"), "有无事件"] = "无"
+#df.loc[(df['离职']=="无"), "有无事件"] = "无"?
 
 df.loc[:,"是否更换法人公司"] = "否"
 df.loc[(df['有无事件'] == "有")&(df['人事范围描述.1'] != "无")&(df.loc[:,'人事范围描述'].apply(lambda x:x[:2])!=df.loc[:,'人事范围描述.1'].apply(lambda x:x[:2])),"是否更换法人公司"] = "是"
